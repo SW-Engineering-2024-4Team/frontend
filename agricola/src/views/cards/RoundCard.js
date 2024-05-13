@@ -1,13 +1,15 @@
-import React from 'react';
-import './RoundCard.css';
+import React from "react";
+import "./RoundCard.css";
 
 const Card = ({ number, index, isBack, onClick }) => {
   const handleClick = () => {
     onClick(index, number);
   };
-  
-  const cardClass = `card ${isBack ? 'back' : 'front'} `;
-  const imagePath = isBack ? `../../components/cardbg.jpg` : `../../image/RoundCard/round${number}.png`;
+
+  const cardClass = `card ${isBack ? "back" : "front"} `;
+  const imagePath = isBack
+    ? `../../components/cardbg.jpg`
+    : `../image/RoundCard/round${number}.png`;
 
   return (
     <div
