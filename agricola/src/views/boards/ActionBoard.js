@@ -12,7 +12,8 @@ const ActionBoard = () => {
     <Box
       height={420}
       width={700}
-      my={4}
+      mx={2}
+      my={2}
       display="flex"
       alignItems="center"
       gap={4}
@@ -22,7 +23,7 @@ const ActionBoard = () => {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={5}>
         {Array.from(Array(14)).map((_, index) => (
           <Grid item xs={3} sm={1} md={1} key={index}>
-            <ActionCard  number={index+1} index={index} />
+            <ActionCard  number={index+1} playerNumber={index%4} index={index} />
             </Grid>
         ))}
       </Grid>

@@ -13,7 +13,8 @@ const MajorBoard = () => {
     <Box
       height={420}
       width={480}
-      my={4}
+      mx={2}
+      my={2}
       display="flex"
       alignItems="center"
       gap={4}

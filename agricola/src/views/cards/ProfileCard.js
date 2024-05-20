@@ -17,10 +17,12 @@ const settings = ['PersonalBoard'];
 //선 표시(뱃지)
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
+
     backgroundImage: `url("../../image/Profile/playerFirst.png")`, // 뱃지 이미지 경로 설정
     backgroundSize: 'cover',
     width: '35px', // 뱃지 이미지의 가로 크기에 맞게 조정
     height: '35px', // 뱃지 이미지의 세로 크기에 맞게 조정
+
     '&::after': {
       display: 'none', // 이미지에서 사용하지 않는 요소 숨기기
     },
@@ -116,3 +118,4 @@ const ProfileCard = ({ name, profileImage, profileNum , isFirstPlayer }) => {
 }
 
 export default ProfileCard;
+

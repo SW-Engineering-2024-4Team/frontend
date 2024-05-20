@@ -8,9 +8,10 @@ const CurrentBoard = () => {
   const count = 2;
   return (
     <Box
-      height={100}
-      width={540}
-      my={4}
+      height={50}
+      width={1200}
+      mx={2}
+      my={2}
       display="flex"
       alignItems="center"
       gap={4}

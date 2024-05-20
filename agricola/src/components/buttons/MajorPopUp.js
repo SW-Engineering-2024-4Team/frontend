@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // MUI 불러오기
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 
-const ResourceBoard = () => {
-
+const CurrentBoard = () => {
+  const count = 2;
   return (
     <Box
-      height={400}
-      width={150}
+      height={50}
+      width={100}
       mx={2}
       my={2}
       display="flex"
@@ -17,8 +18,9 @@ const ResourceBoard = () => {
       p={2}
       sx={{ border: '2px solid grey' }}
     >
+      <h2> 주요 설비 </h2>
     </Box>
   );
 };
 
-export default ResourceBoard;
+export default CurrentBoard;

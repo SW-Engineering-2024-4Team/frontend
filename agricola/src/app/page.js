@@ -97,19 +97,19 @@ export default function Home() {
         </a>
 
         <a
-          href="/setting"
+          href="/description"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className={`mb-3 text-2xl font-semibold`}>
-            게임 설정{" "}
+            서비스 설명{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            게임 화면의 다크모드, 배치 등을 조정 할 수 있습니다.
+            게임 서비스의 구성을 자세하게 설명해주는 페이지입니다.
           </p>
         </a>
 
@@ -126,7 +126,7 @@ export default function Home() {
             </span>
           </h2>
           <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            2개월 개발 프로젝트로 아그리콜라 보드 게임의 프로토타입을 구현합니다.
+            2024년 1학기 개발 프로젝트로 아그리콜라의 프로토타입을 구현합니다.
           </p>
         </a>
       </div>
