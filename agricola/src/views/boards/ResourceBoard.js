@@ -1,6 +1,5 @@
 import React from "react";
 
-// MUI 불러오기
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -38,8 +37,9 @@ const ResourceBoard = () => {
   return (
     <Box
       height={400}
-      width={420}
-      my={4}
+      width={150}
+      mx={2}
+      my={2}
       display="flex"
       alignItems="center"
       justifyContent="center"

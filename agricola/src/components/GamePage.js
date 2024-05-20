@@ -4,51 +4,40 @@ import React from 'react';
 import Grid from '@mui/material/Grid'
 
 // 보드판 불러오기
-import PlayerBoard from '../views/boards/ProfileBoard'
+import ProfileBoard from '../views/boards/ProfileBoard'
+import ActionBoard from '../views/boards/ActionBoard'
 import RoundBoard from '../views/boards/RoundBoard'
 import CurrentBoard from '../views/boards/CurrentBoard'
-import MajorBoard from '../views/boards/MajorBoard'
 import ResourceBoard from '../views/boards/ResourceBoard'
-import PersonalBoard from '../views/boards/PersonalBoard';
+import PersonalBoard from '../views/boards/PersonalBoard'
 import OwnBoard from '../views/boards/OwnBoard'
 import TrigerBoard from '../views/boards/TrigerBoard'
 
-const Game = () => {
+// 팝업 버튼 불러오기
+import MajorPopUp from '../components/buttons/MajorPopUp'
+import SettingPopUp from '../components/buttons/SettingPopUp'
+
+const GamePage = () => {
   const cardCount = 6;
   const row = 3;
 
   return (
     <div>
       <Grid container spacing = {3}>
-        <Grid item xs >
-          <div>
-            <PlayerBoard />
-            <PlayerBoard />
-            <PlayerBoard />
-            <PlayerBoard />
-          </div>
-        </Grid>
-        <Grid item xs >
-          <div>
-            <RoundBoard cardCount={cardCount} row={row} />
-          </div>
-        </Grid>
-        <Grid item xs >
-          <div>
-            <CurrentBoard />
-          </div>
-          <div> 
-            <MajorBoard />
-          </div>
-        </Grid>
-      </Grid>    
+        <CurrentBoard />  
+        <MajorPopUp />
+        <SettingPopUp />
+      </Grid>
+
       <Grid container spacing = {3}>
-        <Grid item xs >
-          <ResourceBoard />
-        </Grid>
-        <Grid item xs >
-          <PersonalBoard />
-        </Grid>
+        <ProfileBoard />
+        <ActionBoard />
+        <RoundBoard cardCount={cardCount} row={row} />
+      </Grid>
+
+      <Grid container spacing = {3}>
+        <ResourceBoard />
+        <PersonalBoard />
         <Grid item xs >
           <OwnBoard />
           <TrigerBoard />
@@ -58,4 +47,4 @@ const Game = () => {
   );
 };
 
-export default Game;
+export default GamePage;

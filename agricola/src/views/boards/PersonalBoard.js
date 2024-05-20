@@ -94,7 +94,8 @@ const PersonalBoard = () => {
     <Box
       height={400}
       width={900}
-      my={4}
+      mx={2}
+      my={2}
       display="flex"
       flexWrap="wrap"
       alignItems="center"
