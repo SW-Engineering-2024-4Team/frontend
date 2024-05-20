@@ -22,7 +22,7 @@ const ResourceBoard = () => {
   const imageSrc =
     theme.palette.mode === "light" ? "triangle-light.png" : "triangle-dark.png";
 
-  const [resources, setResources] = useState([
+  const [resources] = useState([
     { name: "Wood", count: 0 },
     { name: "Soil", count: 0 },
     { name: "Rock", count: 0 },
@@ -34,16 +34,6 @@ const ResourceBoard = () => {
     { name: "Fence", count: 0 },
     { name: "Barn", count: 0 },
   ]);
-
-  const handlePlacement = (name, placement) => {
-    const updatedResources = resources.map((resource) => {
-      if (resource.name === name) {
-        return { ...resource, count: placement };
-      }
-      return resource;
-    });
-    setResources(updatedResources);
-  };
 
   return (
     <Box
