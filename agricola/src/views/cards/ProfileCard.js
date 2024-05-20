@@ -17,11 +17,12 @@ const settings = ['PersonalBoard'];
 //선 표시(뱃지)
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
-    backgroundImage: `url("/image/Profile/playerFirst.png")`, // 뱃지 이미지 경로 설정
+
+    backgroundImage: `url("../../image/Profile/playerFirst.png")`, // 뱃지 이미지 경로 설정
     backgroundSize: 'cover',
     width: '35px', // 뱃지 이미지의 가로 크기에 맞게 조정
     height: '35px', // 뱃지 이미지의 세로 크기에 맞게 조정
-    // boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+
     '&::after': {
       display: 'none', // 이미지에서 사용하지 않는 요소 숨기기
     },
@@ -36,10 +37,6 @@ const ProfileCard = ({ name, profileImage, profileNum , isFirstPlayer }) => {
   };
 
   const borderColor = getColor()
-
-  //  다크모드 세팅하기
-   const theme = useTheme()
-   const imageSrc = theme.palette.mode === 'light' ? 'triangle-light.png' : 'triangle-dark.png'
 
   // 아이콘 선택해서 메뉴창(후에 플레이어보드 팝업 가능한 장소)
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -62,7 +59,6 @@ const ProfileCard = ({ name, profileImage, profileNum , isFirstPlayer }) => {
         alignItems="center"
         gap={4}
         p={2}
-        sx={{ border: '2px solid grey' }}
       > 
       <Tooltip title={name}> 
         <IconButton onClick={handleOpenUserMenu} sx={{ width: 100, height: 100 }}> 

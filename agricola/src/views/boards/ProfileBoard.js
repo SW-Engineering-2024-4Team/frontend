@@ -17,10 +17,10 @@ export default function ProfileBoard() {
       sx={{ border: '2px solid grey' }}
     >
       <Grid item xs >
-        <ProfileCard />
-        <ProfileCard />
-        <ProfileCard />
-        <ProfileCard />
+        <ProfileCard name={'one'} profileImage={`../image/Profile/profile1.png`} profileNum={'0'} isFirstPlayer={true}/>
+        <ProfileCard name={'two'} profileImage={`../image/Profile/profile2.png`} profileNum={'1'} isFirstPlayer={false}/>
+        <ProfileCard name={'three'} profileImage={`../image/Profile/profile3.png`} profileNum={'2'} isFirstPlayer={false}/>
+        <ProfileCard name={'four'} profileImage={`../image/Profile/profile4.png`} profileNum={'3'} isFirstPlayer={false}/>
       </Grid>
     </Box>
   )

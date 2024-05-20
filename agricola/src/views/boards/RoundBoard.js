@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import RoundCard from '../cards/RoundCard'
+import React, { useState} from 'react';
 
 // MUI 불러오기
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
-const RoundBoard = () => {
-  const [cards, setCards] = useState([]);
+import RoundCard from '../cards/RoundCard'
 
-  const handleClick = (index, number) => {
-    const newCards = [...cards];
-    newCards[index].isBack = false;
-    setCards(newCards);
-  };
+const RoundBoard = () => {
 
   return (
     <Box
@@ -22,26 +16,24 @@ const RoundBoard = () => {
       my={2}
       display="flex"
       justifyContent="center"
-      alignItems="center"
       gap={4}
       p={2}
       sx={{ border: '2px solid grey' }}
     >
-      <div className="placeholder" >
-        {cards.map((card, index) => (
-          <RoundCard
-            key={index}
-            number={card.number}
-            index={index}
-            isBack={card.isBack}
-            onClick={handleClick}
-          />
+      <Grid container direction="column" justifyContent="center" alignItems="flex-start" spacing={{ xs: 2, md: 2 }} columns={{ xs: 4, sm: 8, md: 8 }}>
+        {Array.from(Array(4)).map((_, index) => (
+          <Grid item xs={1} sm={1} md={1} key={index}>
+            <RoundCard number={index+1} playerNumber={index} index={index} />
+          </Grid>
         ))}
-      </div>
-      <Grid container justifyContent="center" alignItems="center" spacing={{ xs: 1, md: 1 }} columns={{ xs: 4, sm: 4, md: 4 }}>
-        {Array.from(Array(6)).map((_, index) => (
-          <Grid item xs={2} sm={2} md={2} key={index}>
-            <RoundCard  number={index+1} index={index} />
+        {Array.from(Array(1)).map((_, index) => (
+          <Grid item xs={2} sm={2} md={8} key={index}>
+            <RoundCard  number={index+5} playerNumber={index} index={index} />
+          </Grid>
+        ))}
+        {Array.from(Array(1)).map((_, index) => (
+          <Grid item xs={2} sm={2} md={8} key={index}>
+            <RoundCard  number={index+6} playerNumber={index+1} index={index} />
           </Grid>
         ))}
       </Grid>
