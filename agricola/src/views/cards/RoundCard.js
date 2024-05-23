@@ -110,7 +110,7 @@ const RoundCard = ({ number, index, playerNumber, isFlipped, onClick }) => {
             alt={cardClass}
             onClick={handleClick} // 카드 클릭 이벤트에 handleClick 함수 할당
           />
-          <img
+          {/* <img
             src={coverImagePath}
             alt="coverImage"
             style={{
@@ -122,7 +122,7 @@ const RoundCard = ({ number, index, playerNumber, isFlipped, onClick }) => {
               objectFit: "cover",
               opacity: `${opacity_}`,
             }}
-          />
+          /> 이 부분에서 계속 에러가 나서 우선 주석 처리하고 진행하였습니다.*/}
         </CardActionArea>
       </Card>
     </HtmlTooltip>

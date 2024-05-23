@@ -1,12 +1,12 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
+// MUI 불러오기
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-
 import CardMedia from '@mui/material/CardMedia'
-import Dialog from '@mui/material/Dialog';
-import MajorBoard from '@/views/boards/MajorBoard';
+import Dialog from '@mui/material/Dialog'
+import ChatPage from '@/components/ChatPage'
 
 const emails = ['username@gmail.com', 'user02@gmail.com'];
 
@@ -19,7 +19,7 @@ function SimpleDialog(props) {
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <MajorBoard />
+      <ChatPage />
     </Dialog>
   );
 }
@@ -43,7 +43,7 @@ export default function SimpleDialogDemo() {
     setSelectedValue(value);
   };
 
-  const imagePath = '../../image/CardFrame/frame5.png'
+  const imagePath = '../../image/CardFrame/frame6.png'
 
   return (
     <div>

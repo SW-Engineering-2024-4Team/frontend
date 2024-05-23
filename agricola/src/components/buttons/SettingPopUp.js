@@ -1,26 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import Card from '@mui/material/Card'
+import CardActionArea from '@mui/material/CardActionArea'
+import CardMedia from '@mui/material/CardMedia'
+import Dialog from '@mui/material/Dialog';
+import MajorBoard from '@/views/boards/MajorBoard';
 
-// MUI 불러오기
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
+const emails = ['username@gmail.com', 'user02@gmail.com'];
 
-const CurrentBoard = () => {
-  const count = 2;
+function SimpleDialog(props) {
+  const { onClose, selectedValue, open } = props;
+
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
   return (
-    <Box
-      height={50}
-      width={100}
-      mx={2}
-      my={2}
-      display="flex"
-      alignItems="center"
-      gap={4}
-      p={2}
-      sx={{ border: '2px solid grey' }}
-    >
-      <h2> 세팅 </h2>
-    </Box>
+    <Dialog onClose={handleClose} open={open}>
+      <MajorBoard />
+    </Dialog>
   );
+}
+
+SimpleDialog.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  selectedValue: PropTypes.string.isRequired,
 };
 
-export default CurrentBoard;
+export default function SimpleDialogDemo() {
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+    setSelectedValue(value);
+  };
+
+  const imagePath = '../../image/CardFrame/frame7.png'
+
+  return (
+    <div>
+      <Card sx={{ width: 85, height: 85, my:2, mx: 2}} >
+        <CardActionArea onClick={handleClickOpen}>
+          <CardMedia
+            component="img"
+            image={imagePath}
+            onClick={handleClickOpen}
+          />
+        </CardActionArea>
+      </Card>
+      <SimpleDialog
+        selectedValue={selectedValue}
+        open={open}
+        onClose={handleClose}
+      />
+    </div>
+  );
+}

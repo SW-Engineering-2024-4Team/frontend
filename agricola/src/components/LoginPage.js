@@ -1,6 +1,6 @@
-import React from "react";
+import * as React from "react"
 
-// ** MUI Components
+// MUI 불러오기
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'

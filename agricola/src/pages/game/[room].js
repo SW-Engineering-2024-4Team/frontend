@@ -1,21 +1,25 @@
-import { useRouter } from "next/router";
-import * as React from "react";
-import io from "socket.io-client";
+import { useRouter } from "next/router"
+import * as React from "react"
+import io from "socket.io-client"
 
-//components
+// 페이지 불러오기
 import GamePage from "../../components/GamePage"
 import LoginPage from "../../components/LoginPage"
 
 let socket;
+
 export default function Room() {
   const router = useRouter();
-  const { room, name } = router.query;
-  const [name2, setName2] = React.useState(name);
-  const [path, setPath] = React.useState(" ");
-  const [chat, setChat] = React.useState([]);
-  const [cartela, setCartela] = React.useState([]);
-  const [raffleds, setRaffleds] = React.useState([]);
-  const [bingoWinner, setBingoWinner] = React.useState("");
+  const { room, name } = router.query; // URL 쿼리에서 room과 name 가져오기
+
+  // 메시지 헤드
+  const [name2, setName2] = React.useState(name); // 이름: 플레이어 이름
+  const [path, setPath] = React.useState(" "); // 현재 경로 (방 이름, 플레이어 이름 포함)
+
+  // 메시지 바디
+  const [board, setBoard] = React.useState(" "); // 보드: 클릭한 보드가 어떤 보드인지
+  const [card, setCard] = React.useState(" "); // 카드: 클릭한 카드가 어떤 카드인지
+  const [content, setContent] = React.useState([]); // 콘텐츠: 추가적인 내용 (플래그)
 
   React.useEffect(() => {
     socketInitializer(name);
@@ -31,92 +35,68 @@ export default function Room() {
         if (name_ != undefined) joinRoom(room, name);
       });
 
-      socket.on("get-players", (msg) => {
-        //get players
-        //setPlayers(msg);
+      // 보드 정보를 받아 옵니다.
+      socket.on("get-board", (msg) => {
+        setBoard((prev) => [...prev, msg]);
       });
 
-      socket.on("get-chat", (msg) => {
-        setChat((prev) => [...prev, msg]);
+      // 카드 정보를 받아옵니다.
+      socket.on("get-card", (msg) => {
+        setCard((prev) => [...prev, msg]); 
       });
 
-      socket.on("get-cartela", (msg) => {
-        //get player raffled numbers
-        setCartela(msg);
+      // 콘텐츠 정보를 받아옵니다.
+      socket.on("get-content", (msg) => {
+        setContent((prev) => [...prev, msg]); 
       });
 
-      socket.on("get-raffleds", (msg) => {
-        //get raffled balls
-        setRaffleds(msg);
-      });
-
-      socket.on("start-game", () => {
-        //start game
-        setPath("play-room");
-      });
-
-      socket.on("get-bingo", (msg) => {
-        //bingo
-        setPath("bingo");
-        setBingoWinner(msg);
-      });
     } catch (e) {
       console.log("error: ", e);
     }
   };
-
+  
+  // 방에 참여하는 함수
   const joinRoom = (room_, name_) => {
     socket.emit("join-room", room_);
-    socket.emit("send-to-host", { room: room_, name: name_, id: socket.id });
     setName2(name_);
     setPath("wait");
   };
 
-  const handleChat = (name_, msg_) => {
-    socket.emit("send-chat", { room: room, name: name_, msg: msg_ });
-    setChat((prev) => [...prev, { name: "sent-200", msg: msg_ }]);
+  const handleBoard = (name_, msg_) => {
+    socket.emit("send-board", { room: room, name: name_, msg: msg_ });
+    setBoard((prev) => [...prev, { name: "sent-200", msg: msg_ }]);
+  };
+  
+  const handleCard = (name_, msg_) => {
+    socket.emit("send-card", { room: room, name: name_, msg: msg_ });
+    setCard((prev) => [...prev, { name: "sent-200", msg: msg_ }]);
   };
 
-  const bingo = () => {
-    let count = 0;
-    cartela.map((el) => {
-      if (raffleds.find((ele) => ele === el) != undefined) count++;
-    });
-
-    if (cartela.length == count) {
-      setPath("bingo");
-      setBingoWinner(name2);
-      socket.emit("send-bingo", room, name2);
-    } else {
-      console.log("NÃO FOI BINGO");
-    }
+  const handleContent = (name_, msg_) => {
+    socket.emit("send-content", { room: room, name: name_, msg: msg_ });
+    setContent((prev) => [...prev, { name: "sent-200", msg: msg_ }]);
   };
 
-  const displayChat = (option) => {
+  // 게임 화면을 렌더링하는 함수
+  const displayGame = (option) => {
     console.log(option);
     return (
-      <GamePage />
+      <GamePage 
+        name={name2}
+        board={board}
+        card={card}
+        content={content}
+        btnBoardFunction={handleBoard}
+        btnCardFunction={handleCard}
+        btnContentFunction={handleContent}
+        onGame={option == "on-game" ? true : false}
+      />
     );
   };
 
   switch (path) {
     case "wait":
-      return displayChat();
-
-    // case "play-room":
-    //   return (
-    //     <>
-    //       {displayChat("on-game")}
-    //       <section className={styles.main_play}>
-    //         <p> {name2}</p>
-    //         <p> 5 ultimos sorteados </p>
-            
-    //         <button className={styles.btn_bingo} onClick={bingo}>
-    //           Bingo!
-    //         </button>
-    //       </section>
-    //     </>
-    //   );
+      return displayGame();
     case "bingo":
       return (
         <>
@@ -127,7 +107,7 @@ export default function Room() {
       return (
         <>
             <p>
-              Bem-vind@ {name} à sala {room}
+              내 이름: {name} 방 이름: {room}
             </p>
             {name == undefined && (
               <LoginPage type="room" btnFunction={joinRoom} room={room} />
