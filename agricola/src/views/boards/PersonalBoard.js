@@ -48,6 +48,14 @@ const BarnImageStyled = styled("img")({
   transform: "translate(-50%, -50%)",
   objectFit: "contain",
 });
+const FenceImageStyled = styled("div")({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  boxSizing: "border-box",
+});
 const SeedImageStyled = styled("img")({
   width: "155%",
   height: "155%",
@@ -94,7 +102,7 @@ const PersonalBoard = () => {
       (adjIndex) => adjIndex >= 0 && plotStatuses[adjIndex].type === type
     );
   };
-  //인접한 곳에 있는지 확인합니다. 밭과 방, 울타리는 각각 인접한 곳에서만 추가로 이어 지을 수 있습니다.
+  //인접한 곳에 있는지 확인합니다. 밭과 방, 울타리는 각각 인접한 곳에서만 지어질 수 있습니다.
 
   const updateCanBuildFence = () => {
     const newCanBuildFence = plotStatuses.map((status, index) => {
@@ -130,25 +138,25 @@ const PersonalBoard = () => {
     });
 
     newPlotStatuses.forEach((status, index) => {
-      if (status.type === "fence") {
+      if (status.fence) {
         newFences[index] = { top: 1, right: 1, bottom: 1, left: 1 };
 
-        if (index - 5 >= 0 && newPlotStatuses[index - 5].type === "fence") {
+        if (index - 5 >= 0 && newPlotStatuses[index - 5].fence) {
           newFences[index].top = 0;
           newFences[index - 5].bottom = 0;
         }
         if (
           index + 5 < newPlotStatuses.length &&
-          newPlotStatuses[index + 5].type === "fence"
+          newPlotStatuses[index + 5].fence
         ) {
           newFences[index].bottom = 0;
           newFences[index + 5].top = 0;
         }
-        if (index % 5 !== 0 && newPlotStatuses[index - 1].type === "fence") {
+        if (index % 5 !== 0 && newPlotStatuses[index - 1].fence) {
           newFences[index].left = 0;
           newFences[index - 1].right = 0;
         }
-        if (index % 5 !== 4 && newPlotStatuses[index + 1].type === "fence") {
+        if (index % 5 !== 4 && newPlotStatuses[index + 1].fence) {
           newFences[index].right = 0;
           newFences[index + 1].left = 0;
         }
@@ -191,16 +199,18 @@ const PersonalBoard = () => {
         return;
       }
     } else if (modification === "fence") {
-      if (
-        currentStatus.type === "none" &&
-        (plotStatuses.filter((plot) => plot.type === "fence").length === 0 ||
-          isAdjacent(currentPlot, "fence"))
-      ) {
-        newPlotStatuses[currentPlot] = { type: "fence", level: 0 };
-      } else {
+      if (currentStatus.type === "none" || currentStatus.type === "barn") {
+        newPlotStatuses[currentPlot] = {
+          ...currentStatus,
+          fence: true,
+          type: currentStatus.type === "none" ? "fence" : currentStatus.type,
+        };
+      } else if (currentStatus.type === "fence") {
         handleClose();
         return;
       }
+    } else if (modification === "barn") {
+      newPlotStatuses[currentPlot] = { ...currentStatus, barn: true };
     } else if (modification === "room") {
       if (currentStatus.type === "none" && isAdjacent(currentPlot, "room")) {
         newPlotStatuses[currentPlot] = { type: "room", level: 1 };
@@ -216,7 +226,7 @@ const PersonalBoard = () => {
       ) {
         handleClose();
         return;
-      } // fence와 barn은 중첩이 가능하게 지어질 수 있습니다.
+      }
 
       if (
         currentStatus.type === "none" ||
@@ -307,9 +317,10 @@ const PersonalBoard = () => {
           {status.type === "plow" && (
             <ImageStyled src="../../image/Farm/plow.png" alt="Plowed Field" />
           )}
-          {status.type === "barn" && (
+          {status.barn && (
             <BarnImageStyled src="../../image/Farm/house.png" alt="Barn" />
           )}
+          {status.fence && <FenceImageStyled />}
           {status.type === "seeding" && (
             <SeedImageStyled
               src="../../image/Farm/plow_grain3.png"
@@ -317,6 +328,7 @@ const PersonalBoard = () => {
             />
           )}
         </FarmPlot>
+        //울타리와 외양간은 중첩해서 설치가 가능합니다.
       ))}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Choose Modification</DialogTitle>
