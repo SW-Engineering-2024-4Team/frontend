@@ -36,8 +36,9 @@ const ResourceBoard = () => {
   return (
     <Box
       height={400}
-      width={420}
+      width={150}
       my={4}
+      mx={2}
       display="flex"
       alignItems="center"
       justifyContent="center"
