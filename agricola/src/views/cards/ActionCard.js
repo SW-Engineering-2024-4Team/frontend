@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
-import { CardActionArea } from '@mui/material';
+import React, { useState } from "react";
+import Card from "@mui/material/Card";
+import CardMedia from "@mui/material/CardMedia";
+import CardActionArea from "@mui/material/CardActionArea";
+import Typography from "@mui/material/Typography"; // Typography import 추가
+import Tooltip from "@mui/material/Tooltip";
+import { actionCardDetails } from "../../components/details/ActionCardDetails";
+import Resource from "../boards/Resource";
 
 /*
 행동 카드 파라미터
@@ -11,69 +15,84 @@ import { CardActionArea } from '@mui/material';
 -- onClick 카드 클릭 여부
 */
 
-const ActionCard = ({ number, index, playerNumber, isFlipped, onClick }) => {
+export default function ActionCard({
+  cardNumber,
+  resource,
+  playerNumber,
+  onClick,
+}) {
+  const [isClicked, setIsClicked] = useState(playerNumber !== 0);
 
-  // const [clicked, setClicked] = useState(false);
-
-  // const handleClick = () => {
-  //   if (!clicked && typeof onClick === 'function') { // 클릭되지 않았을 때만 처리
-  //     onClick(index, number);
-  //     setClicked(true); // 클릭 시 clicked 상태를 true로 변경
-  //   }
-  // };
-
-  // 추가: 카드가 뒤집힌 상태를 관리하기 위한 상태 추가
-  const [isBack, setIsBack] = useState(false);
-
-  // 카드 클릭 시 호출되는 핸들러 함수 
   const handleClick = () => {
-    if (isBack == false){
-      setIsBack(true);
-      isFlipped == true;
-      setTimeout(() => {
-        if (typeof onClick === 'function') {
-          onClick(index, number);
-        }
-      }, 500); // 0.5초 후에 onClick 실행
+    setIsClicked(!isClicked);
+    if (typeof onClick === "function") {
+      onClick(cardNumber);
     }
   };
 
-  // 카드의 클래스 결정
-  // const cardClass = `card ${isBack ? 'front' : 'back' }`;
-  
-  const cardClass = `action ${number} ${isBack ? 'Y' : 'N'} `;
-  const imagePath = `../../image/ActionCard/action${number}.png`;
-  const coverImagePath = `../../image/ClickedCard/clicked-action${playerNumber+1}.png`;
-  const opacity_ = isBack ? 1.0 : 0.0;
-  
+  const handleCardHover = (event) => {
+    const card = event.currentTarget;
+    card.style.transform = "scale(1.1)";
+    card.style.transition = "transform 0.1s linear";
+    card.style.boxShadow = "1px 4px 15px -3px rgba(0, 0, 0, 0.5)";
+  };
+  const handleCardLeave = (event) => {
+    const card = event.currentTarget;
+    card.style.transform = "scale(1)";
+    card.style.transition = "transform 0.1s linear";
+    card.style.boxShadow = "none";
+  };
+  const cardClass = `action ${cardNumber} ${isClicked ? "Y" : "N"} `;
+  const imagePath = `../../image/ActionCard/action${cardNumber}.png`;
+  const coverImagePath = playerNumber
+    ? `../../image/ClickedCard/clicked-action${playerNumber}.png`
+    : null;
+
   return (
-    <Card sx={{ maxWidth: 130 }}>
-      <CardActionArea onClick={handleClick}>
-        <div style={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            image={imagePath} // 기본 이미지만 표시
-            alt={cardClass}
-            onClick={handleClick}
-          />
-          <img
-
-            src={coverImagePath}
-            alt="coverImage"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              opacity: `${opacity_}`,
-            }}
-            />
-        </div>
-      </CardActionArea>
-    </Card>
+    <div>
+      <Tooltip title={actionCardDetails[cardNumber - 1]}>
+        <Card
+          sx={{ maxWidth: 130 }}
+          onMouseEnter={handleCardHover}
+          onMouseLeave={handleCardLeave}
+        >
+          <CardActionArea onClick={handleClick}>
+            <div style={{ position: "relative" }}>
+              <CardMedia
+                component="img"
+                image={imagePath} // 기본 이미지만 표시
+                alt={cardClass}
+              />
+              {isClicked && coverImagePath && (
+                <img
+                  src={coverImagePath}
+                  alt="coverImage"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+              <Typography
+                variant="h4"
+                color="text.primary"
+                style={{
+                  position: "absolute",
+                  bottom: 18,
+                  right: 75,
+                  fontWeight: "bold",
+                }}
+              >
+                {resource}
+              </Typography>
+            </div>
+          </CardActionArea>
+        </Card>
+      </Tooltip>
+    </div>
   );
-};
-
-export default ActionCard;
+}

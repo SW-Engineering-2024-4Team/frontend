@@ -199,7 +199,12 @@ const PersonalBoard = () => {
         return;
       }
     } else if (modification === "fence") {
-      if (currentStatus.type === "none" || currentStatus.type === "barn") {
+      if (
+        (currentStatus.type === "none" &&
+          (plotStatuses.filter((plot) => plot.type === "fence").length === 0 ||
+            isAdjacent(currentPlot, "fence"))) ||
+        currentStatus.type === "barn"
+      ) {
         newPlotStatuses[currentPlot] = {
           ...currentStatus,
           fence: true,

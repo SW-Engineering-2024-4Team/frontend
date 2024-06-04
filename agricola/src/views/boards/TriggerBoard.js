@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 
 import MinorCard from "../cards/MinorCard";
 import WorkCard from "../cards/WorkCard";
+import MajorCard from "../cards/MajorCard";
 
-const OwnBoard = ({ ownList, handleClick }) => {
+const TriggerBoard = ({ triggerList, ownList, handleClick }) => {
   return (
     <Box
       display="flex"
@@ -23,16 +24,16 @@ const OwnBoard = ({ ownList, handleClick }) => {
       height={170}
       width={420}
     >
-      {ownList &&
-        ownList.map((card) => {
-          const CardComponent = card.type === "minor" ? MinorCard : WorkCard;
+      {triggerList &&
+        triggerList.map((card) => {
+          const CardComponent =
+            card.type === "minor"
+              ? MinorCard
+              : card.type === "work"
+              ? WorkCard
+              : MajorCard;
           return (
-            <Box
-              key={card.id}
-              sx={{ flex: "0 0 auto", mr: "-30px" }}
-              onClick={() => handleClick(card.id)}
-              style={{ cursor: "pointer" }}
-            >
+            <Box key={card.id} sx={{ flex: "0 0 auto", mr: "-30px" }}>
               <CardComponent
                 cardNumber={card.id}
                 playerNumber={card.playerNumber}
@@ -46,4 +47,4 @@ const OwnBoard = ({ ownList, handleClick }) => {
   );
 };
 
-export default OwnBoard;
+export default TriggerBoard;

@@ -7,17 +7,30 @@ import Grid from "@mui/material/Grid";
 import RoundCard from "../cards/RoundCard";
 
 const RoundBoard = () => {
+  const initialClickedRoundCards = [0, 1, 0, 4, 0, 0, 3, 0, 2, 0, 1, 1, 0, 0];
+  const [clickedRoundCards, setClickedRoundCards] = useState(
+    initialClickedRoundCards
+  );
+
+  const handleCardClick = (cardNumber) => {
+    setClickedRoundCards((prev) => {
+      const newClickedRoundCards = [...prev];
+      newClickedRoundCards[cardNumber - 1] =
+        newClickedRoundCards[cardNumber - 1] === 0 ? 1 : 0;
+      return newClickedRoundCards;
+    });
+  };
+
   return (
     <Box
       height={420}
       width={650}
-      mx={2}
+      mx={1}
       my={2}
       display="flex"
       justifyContent="center"
       gap={4}
       p={2}
-      sx={{ border: "2px solid grey" }}
     >
       <Grid
         container
@@ -29,18 +42,26 @@ const RoundBoard = () => {
       >
         {Array.from(Array(4)).map((_, index) => (
           <Grid item xs={1} sm={1} md={1} key={index}>
-            <RoundCard number={index + 1} playerNumber={index} index={index} />
-          </Grid>
-        ))}
-        {Array.from(Array(1)).map((_, index) => (
-          <Grid item xs={2} sm={2} md={8} key={index}>
-            <RoundCard number={index + 5} playerNumber={index} index={index} />
+            <RoundCard
+              cardNumber={index + 1}
+              playerNumber={index}
+              index={index}
+            />
           </Grid>
         ))}
         {Array.from(Array(1)).map((_, index) => (
           <Grid item xs={2} sm={2} md={8} key={index}>
             <RoundCard
-              number={index + 6}
+              cardNumber={index + 5}
+              playerNumber={index}
+              index={index}
+            />
+          </Grid>
+        ))}
+        {Array.from(Array(1)).map((_, index) => (
+          <Grid item xs={2} sm={2} md={8} key={index}>
+            <RoundCard
+              cardNumber={index + 6}
               playerNumber={index + 1}
               index={index}
             />

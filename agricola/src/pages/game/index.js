@@ -11,7 +11,7 @@ import MajorBoard from "../../views/boards/MajorBoard";
 import ResourceBoard from "../../views/boards/ResourceBoard";
 import PersonalBoard from "../../views/boards/PersonalBoard";
 import OwnBoard from "../../views/boards/OwnBoard";
-import TrigerBoard from "../../views/boards/TrigerBoard";
+import TriggerBoard from "../../views/boards/TriggerBoard";
 
 import LoginPage from "../../components/LoginPage";
 
@@ -67,7 +67,7 @@ export default function Home(props) {
           </Grid>
           <Grid item xs>
             <OwnBoard />
-            <TrigerBoard />
+            <TriggerBoard />
           </Grid>
         </Grid>
       </div>
