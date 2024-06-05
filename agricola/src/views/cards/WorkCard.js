@@ -4,49 +4,34 @@ import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 
-const HtmlTooltip = styled(({ className, ...props }) => (
-    <Tooltip {...props} classes={{ popper: className }} followCursor />
-  ))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: '#f5f5f9',
-      color: 'rgba(0, 0, 0, 0.87)',
-      maxWidth: 150,
-      fontSize: theme.typography.pxToRem(12),
-      border: '1px solid #dadde9',
-    },
-  }));
+import { workCardDetails } from '../../components/details/WorkCardDeatails';
 
 /*
-직업 카드 파라미터
+보조 설비 카드 파라미터
 -- number 카드 고유 번호
--- index 카드 순서
+-- index 카드 순조
 -- isTriger 카드 발동 여부
 -- onClick 카드 클릭 여부
 */
 
-const WorkCard = ({ number, index, isTriger, onClick }) => {
-
-  // 카드가 뒤집힌 상태를 관리하기 위한 상태 추가
-  const [isBack, setIsBack] = useState(false);
-
+const WorkCard = ({ index, cardNumber, isTriger, onClick }) => {
+  
+   // 카드가 클릭된 상태
+  const [isClicked, setIsClicked] = useState(false);
+ 
   // 카드 클릭 시 호출되는 핸들러 함수 
   const handleClick = () => {
-    if (isBack == false){
-      setIsBack(true);
+    if (isClicked == true){
+      setIsClicked(true);
       setTimeout(() => {
         if (typeof onClick === 'function') {
-          onClick(index, number);
+          onClick(index, cardNumber);
         }
       }, 500); // 0.5초 후에 onClick 실행
     }
   };
-
- const cardClass = `work ${number} ${isBack ? 'Y' : 'N'} `
- const imagePath = isBack ? null :`../image/WorkCard/work${number}.png`
 
   const handleCardHover = (event) => {
     const card = event.target.closest('.work-card');
@@ -65,37 +50,32 @@ const WorkCard = ({ number, index, isTriger, onClick }) => {
     card.style.zIndex = '0';
   };
 
+  const cardClass = `minor ${cardNumber} ${isClicked ? 'Y' : 'N'} `
+  const imagePath = isClicked ? null :`../image/WorkCard/work${cardNumber}.png`
+
   return (
-    <HtmlTooltip
-        title={
-          <React.Fragment>
-            <Typography color="inherit">그릇 제작소</Typography>
-            <em>{"And here's"}</em> <b>{'some'}</b> <u>{'amazing content'}</u>.{' '}
-            {"It's very engaging. Right?"}
-          </React.Fragment>
-        }
-      >
-        <Card className="work-card"
-          sx={{
-            maxWidth: 130,
-            position: 'relative',
-          }}
-          onMouseEnter={handleCardHover}
-          onMouseLeave={handleCardLeave}
-          onClick={handleClick}
-          >
-          <CardActionArea>
-            {imagePath && (
-              <CardMedia
-                component="img"
-                height="200"
-                image={imagePath}
-                alt={cardClass}
-              />
-            )}
-          </CardActionArea>
-        </Card>
-    </HtmlTooltip>
+    <div>
+    <Tooltip title={workCardDetails[cardNumber-1]}>
+      <Card className="work-card" 
+        sx={{
+          maxWidth: 130,
+          // position: 'relative',
+        }}
+        onMouseEnter={handleCardHover}
+        onMouseLeave={handleCardLeave}
+        >
+        <CardActionArea onClick={handleClick}>
+          <CardMedia
+              component="img"
+              height="200"
+              image={imagePath}
+              alt={cardClass}
+              onClick={handleClick} // 카드 클릭 이벤트에 handleClick 함수 할당
+            />
+        </CardActionArea>
+      </Card>
+    </Tooltip>
+    </div>
   );
 };
 
