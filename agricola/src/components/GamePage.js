@@ -12,6 +12,7 @@ import ResourceBoard from '../views/boards/ResourceBoard'
 import PersonalBoard from '../views/boards/PersonalBoard2'
 import OwnBoard from '../views/boards/OwnBoard'
 import TrigerBoard from '../views/boards/TrigerBoard'
+import CardDeckBoard from '../views/boards/CardDeckBoard'
 
 // 팝업 버튼 불러오기
 import MajorPopUp from '../components/buttons/MajorPopUp'
@@ -92,8 +93,7 @@ export default function GamePage(props) {
         <ResourceBoard />
         <PersonalBoard pid={1}/>
         <Grid item xs >
-          <OwnBoard />
-          <TrigerBoard />
+          <CardDeckBoard />
         </Grid>
       </Grid>
     </Grid>
