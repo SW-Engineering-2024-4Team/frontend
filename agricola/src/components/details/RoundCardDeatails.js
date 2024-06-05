@@ -7,6 +7,7 @@ export const roundCardDetails = [
   울타리 치기
   `,
   `
+  양시장
   `,
   `
   주요 설비나 보조 설비 하나

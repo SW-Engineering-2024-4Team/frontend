@@ -1,25 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import WebSocketClient from './WebSocketClient';
 
 const WebSocketPage = () => {
-  const [messages, setMessages] = useState([]); // 메시지를 저장할 상태 변수
+  const initialPlayers = ['고도희', '정지윤', '김윤재', '이수빈'];
+  const [players] = useState(initialPlayers);
 
-  // 메시지 수신 시 호출되는 함수
-  const handleOnMessageReceived = (message) => {
-    setMessages((prevMessages) => [...prevMessages, JSON.stringify(message)]); // 수신된 메시지를 상태에 추가
+  const sendMessageRef = useRef(null); // WebSocketClient 참조를 위한 ref
+
+  // 백엔드에게 메시지 전송
+  const handleSendMessage = () => {
+    if (sendMessageRef.current) {
+      const messageJSON = JSON.stringify({ players });
+      sendMessageRef.current('/app/room/1/start', messageJSON);
+      console.log('SEND INIT');
+    }
   };
 
   return (
     <div>
-      <WebSocketClient roomId="example-room-id" onMessageReceived={handleOnMessageReceived} /> {/* WebSocketClient 컴포넌트 사용 */}
-      <div>
-        <h2>Messages:</h2>
-        <ul>
-          {messages.map((msg, index) => ( // messages 상태 배열을 순회하며 각 메시지를 리스트 아이템으로 표시
-            <li key={index}>{msg}</li> // 각 메시지를 리스트 아이템으로 렌더링
-          ))}
-        </ul>
-      </div>
+      <WebSocketClient
+        roomId="1"
+        onMessageReceived={(message) => console.log('Received message:', message)}
+        ref={(client) => {
+          if (client) {
+            sendMessageRef.current = client.sendMessage;
+          }
+        }}
+      />
+      <button onClick={handleSendMessage}>Send Message</button>
     </div>
   );
 };

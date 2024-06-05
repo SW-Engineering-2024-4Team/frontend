@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 
 // MUI 불러오기
 import Box from '@mui/material/Box';
@@ -22,13 +22,13 @@ const RoundBoard = () => {
     <Box
       height={420}
       width={650}
-      mx={2}
+      mx={1}
       my={2}
       display="flex"
       justifyContent="center"
       gap={4}
       p={2}
-      sx={{ border: '2px solid grey' }}
+      sx={{ border: "2px solid grey", m: 0 }}
     >
       <Grid container direction="column" justifyContent="center" alignItems="flex-start" spacing={{ xs: 2, md: 2 }} columns={{ xs: 4, sm: 8, md: 8 }}>
         {Array.from(Array(4)).map((_, index) => (

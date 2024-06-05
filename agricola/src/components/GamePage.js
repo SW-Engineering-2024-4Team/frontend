@@ -9,7 +9,9 @@ import ActionBoard from '../views/boards/ActionBoard'
 import RoundBoard from '../views/boards/RoundBoard'
 import CurrentBoard from '../views/boards/CurrentBoard'
 import ResourceBoard from '../views/boards/ResourceBoard'
-import PersonalBoard from '../views/boards/PersonalBoard'
+import PersonalBoard from '../views/boards/PersonalBoard2'
+import OwnBoard from '../views/boards/OwnBoard'
+import TrigerBoard from '../views/boards/TrigerBoard'
 import CardDeckBoard from '../views/boards/CardDeckBoard'
 
 // 팝업 버튼 불러오기
@@ -83,13 +85,13 @@ export default function GamePage(props) {
 
       <Grid container spacing = {1}>
         <ProfileBoard />
-        <ActionBoard />
+        <ActionBoard currentPlayer={1} />
         <RoundBoard />
       </Grid>
 
       <Grid container spacing = {1}>
         <ResourceBoard />
-        <PersonalBoard />
+        <PersonalBoard pid={1}/>
         <Grid item xs >
           <CardDeckBoard />
         </Grid>

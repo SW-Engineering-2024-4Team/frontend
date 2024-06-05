@@ -14,7 +14,7 @@ export default function ProfileBoard() {
       alignItems="center"
       gap={4}
       p={2}
-      sx={{ border: '2px solid grey' }}
+      sx={{ border: '2px solid grey', m: 0 }}
     >
       <Grid item xs >
         <ProfileCard name={'one'} profileImage={`../image/Profile/profile1.png`} profileNum={'0'} isFirstPlayer={true}/>

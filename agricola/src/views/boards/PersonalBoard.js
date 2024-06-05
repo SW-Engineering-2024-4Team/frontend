@@ -75,14 +75,12 @@ const PersonalBoard = () => {
     <Box
       height={400}
       width={900}
-      mx={2}
-      my={2}
       display="flex"
       flexWrap="wrap"
       alignItems="center"
       gap={1}
       p={2}
-      sx={{ border: '2px solid grey' }}
+      sx={{ border: '2px solid grey', m: 1 }}
     >
       {plotStatuses.map((status, index) => (
         <FarmPlot

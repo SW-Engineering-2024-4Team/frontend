@@ -74,8 +74,8 @@ export default function RoundCard({ index, cardNumber, playerNumber, onClick }) 
           transform: isBack ? 'rotateY(180deg)' : 'rotateY(0deg)',
           transition: 'transform 0.5s',
         }}
-        onMouseEnter={handleCardHover}
-        onMouseLeave={handleCardLeave}
+        onMouseEnter={ isBack ? handleCardHover : null }
+        onMouseLeave={ isBack ? handleCardLeave : null }
         >
         <CardActionArea onClick={handleClick}>
             <CardMedia
