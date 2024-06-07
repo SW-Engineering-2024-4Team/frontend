@@ -1,26 +1,20 @@
-import React from "react";
+import React, { useState, useRef } from 'react';
 
-// MUI 불러오기
-import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import CardContent from "@mui/material/CardContent";
+// MUI 불러오기\
 import { styled, useTheme } from "@mui/material/styles";
 
+// 보드 컴포넌트 불러오기
 import Box from "@mui/material/Box";
 
-// 라운드 카드 불러오기
-import RoundCard from "../cards/RoundCard";
-
 import Resource from "./Resource";
+import WebSocketClient from '../../components/WebSocketClient'; // WebSocketClient 불러오기
 
-import { useState } from "react";
 const ResourceBoard = () => {
   const theme = useTheme();
   const imageSrc =
     theme.palette.mode === "light" ? "triangle-light.png" : "triangle-dark.png";
 
-  const [resources] = useState([
+  const [resources, setResources] = useState([
     { name: "Wood", count: 0 },
     { name: "Soil", count: 0 },
     { name: "Rock", count: 0 },
@@ -33,18 +27,40 @@ const ResourceBoard = () => {
     { name: "Barn", count: 0 },
   ]);
 
+  const handlePlacement = (name, placement) => {
+    const updatedResources = resources.map((resource) => {
+      if (resource.name === name) {
+        return { ...resource, count: placement };
+      }
+      return resource;
+    });
+    setResources(updatedResources);
+  };
+
+  const sendMessageRef = useRef(null);
+
+  // 보드 정보 백엔드에게 받아오기
+  const handleMessageReceived = (message) => {
+    console.log('Message received from server:', message);
+    if (message.resources) {
+      setResources(message.resources);
+    }
+  };
+
   return (
     <Box
       height={400}
       width={150}
-      my={4}
-      mx={2}
       display="flex"
       alignItems="center"
       justifyContent="center"
       p={2}
-      sx={{ border: "2px solid grey" }}
+      sx={{ border: "2px solid grey", m: 1 }}
     >
+      <WebSocketClient
+        roomId="1"
+        onMessageReceived={handleMessageReceived}
+      />
       <div className="resource-board">
         {[...Array(5)].map((_, index) => (
           <div

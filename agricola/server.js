@@ -33,10 +33,17 @@ app.prepare().then(() => {
 
   io.on('connection', (socket) => {
     console.log('a user connected');
+    
     // Handle socket events here
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
+
+    socket.on('cardClicked', (data) => {
+      console.log('Card clicked:', data);
+      // 여기서 받은 데이터를 이용해 필요한 작업을 수행
+    });
+
   });
 
   server.listen(port, () => {

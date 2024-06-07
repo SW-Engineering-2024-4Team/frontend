@@ -1,6 +1,4 @@
-import * as React from "react";
-
-// MUI 불러오기
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 
 // 보드판 불러오기
@@ -10,90 +8,79 @@ import RoundBoard from "../views/boards/RoundBoard";
 import CurrentBoard from "../views/boards/CurrentBoard";
 import ResourceBoard from "../views/boards/ResourceBoard";
 import PersonalBoard from "../views/boards/PersonalBoard";
-import CardDeckBoard from "../views/boards/CardDeckBoard";
+import OwnBoard from "../views/boards/OwnBoard";
+import TriggerBoard from "../views/boards/TriggerBoard";
+
 // 팝업 버튼 불러오기
 import MajorPopUp from "../components/buttons/MajorPopUp";
 import SettingPopUp from "../components/buttons/SettingPopUp";
 import ChatPopUp from "../components/buttons/ChatPopUp";
 
-export default function GamePage(props) {
-  const [msg, setMsg] = React.useState(""); // 메시지 입력 상태 관리
-  const [oldChat, setOldChat] = React.useState(props.content.length);
-  const exibLastChat = React.useRef(null);
+// 팝업 다이어로그 불러오기
+import DialogChoiceCard from "./buttons/DialogChoiceCard";
 
-  const handleEnter = (e) => {
-    // 클릭 이벤트 발생시
-    sendMsg();
+// 컨텍스트 관련 불러오기
+import { usePlayer } from "./PlayerContext";
+
+function GamePage({ currentPlayer }) {
+  const { clickedPlayer } = usePlayer();
+
+  useEffect(() => {
+    console.log("Clicked player:", clickedPlayer);
+  }, [clickedPlayer]);
+
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
   };
 
-  const sendMsg = () => {
-    if (msg !== "") {
-      props.btnFunction(props.name, msg);
-      setMsg("");
-    }
+  const handleClose = () => {
+    setOpen(false);
   };
-
-  const displayMsg = (e_, idx_) => {
-    switch (e_.name) {
-      case "newPlayer":
-        return (
-          <ReceivedMessage key={idx_}>
-            <Typography>{e_.msg}</Typography>
-          </ReceivedMessage>
-        );
-      case "cartela":
-        return (
-          <ReceivedMessage key={idx_}>
-            <Typography>seus numeros são:</Typography>
-            <Typography>{e_.msg.toString()}</Typography>
-            <Typography>boa sorte!</Typography>
-          </ReceivedMessage>
-        );
-      case "sent-200":
-        return (
-          <SentMessage key={idx_}>
-            <Typography>{e_.msg}</Typography>
-          </SentMessage>
-        );
-      default:
-        return (
-          <ReceivedMessage key={idx_}>
-            <Typography variant="subtitle2">{e_.name}</Typography>
-            <Typography>{e_.msg}</Typography>
-          </ReceivedMessage>
-        );
-    }
-  };
-
-  React.useEffect(() => {
-    if (props.content.length !== oldChat) {
-      setOldChat(props.content.length);
-      exibLastChat.current.scrollTop = exibLastChat.current.scrollHeight;
-    }
-  }, [props.content, oldChat]);
 
   return (
     <Grid>
       <Grid container spacing={1}>
         <CurrentBoard />
-        <MajorPopUp />
+        <MajorPopUp currentPlayer={currentPlayer} />
         <SettingPopUp />
-        <ChatPopUp />
+        <ChatPopUp currentPlayer={currentPlayer} />
       </Grid>
 
       <Grid container spacing={1}>
-        <ProfileBoard />
-        <ActionBoard />
-        <RoundBoard />
+        <ProfileBoard clickedPlayer={clickedPlayer} />
+        <ActionBoard currentPlayer={currentPlayer} />
+        <RoundBoard currentPlayer={currentPlayer} />
       </Grid>
 
       <Grid container spacing={1}>
-        <ResourceBoard />
-        <PersonalBoard />
+        <ResourceBoard clickedPlayer={clickedPlayer} />
+        <PersonalBoard
+          currentPlayer={currentPlayer}
+          clickedPlayer={clickedPlayer}
+        />
         <Grid item xs>
-          <CardDeckBoard />
+          <OwnBoard
+            currentPlayer={currentPlayer}
+            clickedPlayer={clickedPlayer}
+          />
+          <TriggerBoard
+            currentPlayer={currentPlayer}
+            clickedPlayer={clickedPlayer}
+          />
         </Grid>
       </Grid>
+      <button onClick={handleClick}>
+        <DialogChoiceCard
+          cardType={"round"}
+          cardNumber={6}
+          open={open}
+          onClose={handleClose}
+        />
+      </button>
     </Grid>
   );
 }
+
+export default GamePage;

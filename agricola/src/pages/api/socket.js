@@ -1,81 +1,53 @@
-import { Server } from "socket.io";
+import { Server } from 'socket.io';
 
-const SocketHandler = (req, res) => {
-  const { option } = req.query;
-  switch (option) {
-    case "connection":
-      if (res.socket.server.io) {
-        //Socket is already running
-      } else {
-        //Initialize socket
-        const io = new Server(res.socket.server);
-        res.socket.server.io = io;
+const ioHandler = (req, res) => {
+  if (!res.socket.server.io) {
+    console.log('*First use, starting socket.io');
 
-        io.on("connection", (socket) => {
-          socket.on("join-room", (room) => {
-            socket.join(room);
-          });
+    const io = new Server(res.socket.server, {
+      path: '/api/socket',
+    });
 
-          socket.on("send-to-room", (msg) => {
-            //send player name and id
-            socket
-              .in(msg.room)
-              .emit("update-players", { name: msg.name, id: msg.id });
-          });
+    let playerIdCounter = 1; // 플레이어 ID를 부여할 카운터
+    const players = new Map(); // 현재 연결된 플레이어 목록
 
-          socket.on("send-to-host", (msg) => {
-            console.log(msg);
-            socket
-              .in(msg.room)
-              .emit("get-new-player", { name: msg.name, id: msg.id });
-          });
+    io.on('connection', (socket) => {
+      console.log('Client connected');
 
-          socket.on("send-chat", (msg) => {
-            socket
-              .in(msg.room)
-              .emit("get-chat", { name: msg.name, msg: msg.msg });
-          });
+      socket.on("join-room", (room, name) => {
+        socket.join(room);
 
-          socket.on("send-players", (msg) => {
-            socket.in(msg.room).emit("get-players", msg.msg);
-          });
+        // 플레이어 ID를 할당하고 소켓에 저장
+        const playerId = playerIdCounter;
+        socket.playerId = playerId; // 소켓에 playerId를 저장
+        socket.playerName = name; // 소켓에 playerName을 저장
+        players.set(socket.id, { id: playerId, name: name });
+        playerIdCounter = (playerIdCounter % 4) + 1; // ID를 1, 2, 3, 4로 순환
 
-          // socket.on("send-cartela", (msg) => {
-          //   //send raffled numbers
-          //   socket.to(msg.to).emit("get-cartela", msg.cartela);
-          // });
+        console.log(`Player ${playerId} connected. Total players: ${players.size}`);
 
-          // socket.on("send-start", (room) => {
-          //   socket.in(room).emit("start-game");
-          // });
+        // 4명이 모두 모이면 게임 시작 신호를 보냄
+        if (players.size === 4) {
+          const playerList = Array.from(players.values());
+          io.emit('startGame', playerList);
+        }
+      });
 
-          // socket.on("send-raffleds", (room, raffleds) => {
-          //   //sen raffled balls
-          //   socket.in(room).emit("get-raffleds", raffleds);
-          // });
+      socket.on('disconnect', () => {
+        const playerId = socket.playerId; // 소켓에서 playerId를 가져옴
+        console.log(`Player ${playerId} disconnected`);
+        // 플레이어 목록에서 제거
+        players.delete(socket.id);
+      });
 
-          // socket.on("send-bingo", (room, name) => {
-          //   socket.in(room).emit("get-bingo", name);
-          // });
-        });
-      }
-      break;
-    case "room":
-      //verify if room is already set
-      if (res.socket.server.io) {
-        const { room } = req.query;
-        const allRooms = Array.from(res.socket.server.io.sockets.adapter.rooms);
-        const activeRooms = allRooms.filter((room) => !room[1].has(room[0]));
-        const activeRoomNames = activeRooms.map((el) => el[0]);
-        const there_is =
-          activeRoomNames.findIndex((el) => el == room) == -1 ? false : true;
-        console.log("here");
-        console.log(there_is);
-        res.status(200).json({ thereIs: there_is });
-      }
-      break;
+      socket.on('sendMessage', (msg) => {
+        io.emit('receiveMessage', msg);
+      });
+    });
+
+    res.socket.server.io = io;
   }
   res.end();
 };
 
-export default SocketHandler;
+export default ioHandler;

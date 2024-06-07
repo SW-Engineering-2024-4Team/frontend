@@ -1,50 +1,59 @@
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
 
-import MinorCard from "../cards/MinorCard";
-import WorkCard from "../cards/WorkCard";
-import MajorCard from "../cards/MajorCard";
+import React, { useState } from 'react';
+import Box from '@mui/material/Box';
 
-const TriggerBoard = ({ triggerList, ownList, handleClick }) => {
+import MinorCard from '../cards/MinorCard';
+import WorkCard from '../cards/WorkCard';
+
+const TrigerBoard = () => {
+
   return (
     <Box
-      display="flex"
-      alignItems="flex-start"
-      justifyContent="flex-start"
-      gap={2}
-      p={4}
-      sx={{
-        border: "2px solid grey",
-        overflowX: "auto",
-        overflowY: "visible",
-        "&::-webkit-scrollbar": { display: "none" },
-        "-ms-overflow-style": "none",
-        scrollbarWidth: "none",
-      }}
       height={170}
-      width={420}
+      width={400}
+      my={2}
+      display="flex"
+      alignItems="flex-start" 
+      justifyContent="flex-start"
+      gap={4}
+      p={4}
+      sx={{ 
+        border: '2px solid grey',
+        overflowX: 'auto',
+        overflowY: 'visible',
+        '&::-webkit-scrollbar': { display: 'none', },
+        '-ms-overflow-style': 'none',
+        'scrollbar-width': 'none',
+      }}
     >
-      {triggerList &&
-        triggerList.map((card) => {
-          const CardComponent =
-            card.type === "minor"
-              ? MinorCard
-              : card.type === "work"
-              ? WorkCard
-              : MajorCard;
-          return (
-            <Box key={card.id} sx={{ flex: "0 0 auto", mr: "-30px" }}>
-              <CardComponent
-                cardNumber={card.id}
-                playerNumber={card.playerNumber}
-                index={card.index}
-                content={card.content}
+      <Box
+        justifyContent="flex-start" 
+        sx={{ 
+          display: 'flex', 
+          width: 'max-content', 
+        }}
+      >
+        {Array.from(Array(3)).map((_, index) => (
+          <React.Fragment key={index}>
+            <Box sx={{ flex: '0 0 auto', mr: '-30px' }}>
+              <MinorCard
+                number={index + 1}
+                index={index}
+                onClick={(index, number) => handleCardClick(index, number)}
               />
             </Box>
-          );
-        })}
+            <Box sx={{ flex: '0 0 auto', mr: '-30px' }}>
+              <WorkCard
+                number={index + 1}
+                index={index}
+                onClick={(index, number) => handleCardClick(index, number)}
+              />
+            </Box>
+          </React.Fragment>
+        ))}
+      </Box>
     </Box>
   );
 };
 
-export default TriggerBoard;
+export default TrigerBoard;

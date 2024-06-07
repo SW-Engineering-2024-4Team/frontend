@@ -6,74 +6,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
-const FarmPlot = styled(Box)(
-  ({ theme, status, canBuildFence, fences, selected }) => ({
-    flex: "1 0 18%",
-    height: "100px",
-    backgroundColor: selected
-      ? "yellow"
-      : status.type === "room"
-      ? "tan"
-      : canBuildFence
-      ? "lightgreen"
-      : "#33CC33",
-    border: "1px solid",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    cursor: "pointer",
-    position: "relative",
-    "&:hover": {
-      backgroundColor: theme.palette.action.hover,
-    },
-    ...(fences.top && {
-      borderTop: "3px solid red",
-    }),
-    ...(fences.right && {
-      borderRight: "3px solid red",
-    }),
-    ...(fences.bottom && {
-      borderBottom: "3px solid red",
-    }),
-    ...(fences.left && {
-      borderLeft: "3px solid red",
-    }),
-  })
-);
-
-const ImageStyled = styled("img")({
-  width: "100%",
-  height: "100%",
-});
-const BarnImageStyled = styled("img")({
-  width: "80%",
-  height: "80%",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  objectFit: "contain",
-});
-const FenceImageStyled = styled("div")({
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  boxSizing: "border-box",
-});
-const SeedImageStyled = styled("img")({
-  width: "155%",
-  height: "155%",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -60%)",
-  objectFit: "contain",
-});
-
-const PersonalBoard = () => {
+const PersonalBoard = ({ clickedPlayer }) => {
   const theme = useTheme();
   const initialPlotStatuses = Array(15).fill({ type: "none", level: 0 });
   initialPlotStatuses[5] = { type: "room", level: 1 };
@@ -86,11 +24,43 @@ const PersonalBoard = () => {
   const [canBuildRoom, setCanBuildRoom] = useState(Array(15).fill(false));
   const [fenceCount, setFenceCount] = useState(0);
   const [fences, setFences] = useState(
-    Array(15).fill({ top: 0, right: 0, bottom: 0, left: 0 })
+    Array(3)
+      .fill()
+      .map(() =>
+        Array(5)
+          .fill()
+          .map(() => [true, true, true, true])
+      )
   );
   const [actionType, setActionType] = useState(null);
   const [validPositions, setValidPositions] = useState([]);
   const [selectedPositions, setSelectedPositions] = useState([]);
+  const [color, setColor] = useState("yellow");
+  const [client, setClient] = useState(null);
+
+  useEffect(() => {
+    const stompClient = new Client({
+      webSocketFactory: () =>
+        new SockJS("http://localhost:8091/agricola-service"), // 서버 주소 및 SockJS 경로
+      debug: function (str) {
+        console.log(str);
+      },
+      onConnect: () => {
+        console.log("Connected");
+      },
+      onStompError: (frame) => {
+        console.error("Broker reported error: " + frame.headers["message"]);
+        console.error("Additional details: " + frame.body);
+      },
+    });
+
+    stompClient.activate();
+    setClient(stompClient);
+
+    return () => {
+      stompClient.deactivate();
+    };
+  }, []);
 
   const handleClickOpen = (index) => {
     setCurrentPlot(index);
@@ -103,10 +73,10 @@ const PersonalBoard = () => {
 
   const isAdjacent = (index, type) => {
     const adjacentIndices = [
-      index % 5 !== 0 ? index - 1 : -1, // 왼쪽이 같은 행에 있는지 확인
-      index % 5 !== 4 ? index + 1 : -1, // 오른쪽이 같은 행에 있는지 확인
-      index - 5 >= 0 ? index - 5 : -1, // 위쪽이 유효한 인덱스인지 확인
-      index + 5 < plotStatuses.length ? index + 5 : -1, // 아래쪽이 유효한 인덱스인지 확인
+      index % 5 !== 0 ? index - 1 : -1,
+      index % 5 !== 4 ? index + 1 : -1,
+      index - 5 >= 0 ? index - 5 : -1,
+      index + 5 < plotStatuses.length ? index + 5 : -1,
     ];
     return adjacentIndices.some(
       (adjIndex) => adjIndex >= 0 && plotStatuses[adjIndex].type === type
@@ -183,6 +153,7 @@ const PersonalBoard = () => {
 
   const modifyPlot = (modification, x, y) => {
     const newPlotStatuses = [...plotStatuses];
+    const newFences = [...fences];
     const currentPlot = x * 5 + y;
     const currentStatus = newPlotStatuses[currentPlot];
 
@@ -249,7 +220,14 @@ const PersonalBoard = () => {
       ) {
         switch (modification) {
           case "fence":
-            newPlotStatuses[currentPlot] = { type: modification, level: 0 };
+            if (currentStatus.type !== "fence") {
+              newFences[x][y] = [true, true, true, true];
+              if (x > 0) newFences[x - 1][y][1] = true;
+              if (x < 2) newFences[x + 1][y][0] = true;
+              if (y > 0) newFences[x][y - 1][3] = true;
+              if (y < 4) newFences[x][y + 1][2] = true;
+            }
+            newPlotStatuses[currentPlot] = { type: "fence", level: 0 };
             break;
           case "room":
             newPlotStatuses[currentPlot] = { type: "room", level: 1 };
@@ -270,6 +248,7 @@ const PersonalBoard = () => {
     }
 
     setPlotStatuses(newPlotStatuses);
+    setFences(newFences);
     calculateFenceCount(newPlotStatuses);
     updateCanBuildFence();
     updateCanBuildRoom();
@@ -277,10 +256,9 @@ const PersonalBoard = () => {
   };
 
   const handlePlotClick = (index) => {
-    const x = Math.floor(index / 5); // 세로 좌표
-    const y = index % 5; // 가로 좌표
+    const x = Math.floor(index / 5);
+    const y = index % 5;
 
-    // 유효한 좌표인지 확인
     const isValidPosition = validPositions.some(
       (pos) => pos.x === x && pos.y === y
     );
@@ -290,7 +268,6 @@ const PersonalBoard = () => {
     }
 
     if (actionType === "fence") {
-      // 울타리 클릭 처리
       const newSelectedPositions = [...selectedPositions];
       const positionExists = newSelectedPositions.some(
         (pos) => pos.x === x && pos.y === y
@@ -304,7 +281,6 @@ const PersonalBoard = () => {
         setSelectedPositions(newSelectedPositions);
       }
     } else {
-      // 기존 로직 유지 및 수정
       if (actionType === "plow") {
         modifyPlot("plow", x, y);
       } else if (actionType === "room") {
@@ -313,14 +289,18 @@ const PersonalBoard = () => {
         modifyPlot("barn", x, y);
       }
 
-      // 좌표가 유효한지 확인하고 유효하면 백엔드로 전송
       const payload = {
         playerId: 1,
         x,
         y,
       };
       console.log("Valid position selected:", x, y);
-      handleSendPosition(payload); // handleSendPosition을 통해 좌표 전송
+      if (client && client.connected) {
+        client.publish({
+          destination: "app/room/1/receiveSelectedPosition",
+          body: JSON.stringify(payload),
+        });
+      }
     }
   };
 
@@ -330,7 +310,12 @@ const PersonalBoard = () => {
       positions: selectedPositions,
     };
     console.log("Sending fence positions:", selectedPositions);
-    handleSendPosition(payload);
+    if (client && client.connected) {
+      client.publish({
+        destination: "app/room/1/receiveSelectedPosition",
+        body: JSON.stringify(payload),
+      });
+    }
     setSelectedPositions([]);
   };
 
@@ -363,6 +348,7 @@ const PersonalBoard = () => {
       playerId: "1",
       actionType: "fence",
     };
+
     handleValidPositions(initialMessage);
   }, []);
 
@@ -375,68 +361,154 @@ const PersonalBoard = () => {
     console.log(`현재 울타리 개수: ${fenceCount}`);
   }, [fenceCount]);
 
+  useEffect(() => {
+    if (clickedPlayer === 1) {
+      setColor("#66CC66");
+    } else if (clickedPlayer === 2) {
+      setColor("#CC3333");
+    } else if (clickedPlayer === 3) {
+      setColor("#3366CC");
+    } else {
+      setColor("#FFFF99");
+    }
+  }, [clickedPlayer]);
+
   return (
     <Box
-      height={400}
-      width={700}
-      my={4}
-      mx={2}
-      display="flex"
-      flexWrap="wrap"
-      alignItems="center"
-      gap={1}
+      height={450}
+      width={810}
+      display="grid"
+      gridTemplateColumns="repeat(5, 1fr)"
+      gridTemplateRows="repeat(3, 1fr)"
+      gap={4} // 간격을 4로 설정
       p={2}
-      sx={{ border: "2px solid grey" }}
+      sx={{ m: 0 }}
     >
-      {plotStatuses.map((status, index) => (
-        <FarmPlot
-          key={index}
-          status={status}
-          canBuildFence={canBuildFence[index]}
-          canBuildRoom={canBuildRoom[index]}
-          fences={fences[index]}
-          selected={selectedPositions.some(
-            (pos) => pos.x === Math.floor(index / 5) && pos.y === index % 5
-          )}
-          onClick={() => handlePlotClick(index)}
-        >
-          {status.type === "room" && (
-            <>
-              {status.level === 1 && (
-                <ImageStyled
-                  src="../../image/Farm/wood_room.png"
-                  alt="Wood Room"
+      {plotStatuses.map((status, index) => {
+        const isActive = canBuildFence[index] || canBuildRoom[index];
+        let imagePath = "";
+
+        if (status.type === "room") {
+          if (status.level === 1) {
+            imagePath = "../../image/Farm/wood_room.png";
+          } else if (status.level === 2) {
+            imagePath = "../../image/Farm/soil_room.png";
+          } else if (status.level === 3) {
+            imagePath = "../../image/Farm/rock_room.png";
+          }
+        } else if (status.type === "plow") {
+          imagePath = "../../image/Farm/plow.png";
+        } else if (status.type === "seeding") {
+          imagePath = "../../image/Farm/plow_grain3.png";
+        } else if (status.barn) {
+          imagePath = "../../image/Farm/house.png";
+        }
+
+        const x = Math.floor(index / 5);
+        const y = index % 5;
+
+        return (
+          <Card key={index} sx={{ padding: 0, margin: 0, boxShadow: "none" }}>
+            <CardActionArea
+              sx={{
+                width: "100%",
+                height: "100%",
+                backgroundColor: color,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
+                borderRadius: "4px",
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "black",
+                m: 0,
+                position: "relative",
+              }}
+              onClick={() => handlePlotClick(index)}
+            >
+              {imagePath && (
+                <img
+                  src={imagePath}
+                  alt="coverImage"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
                 />
               )}
-              {status.level === 2 && (
-                <ImageStyled
-                  src="../../image/Farm/soil_room.png"
-                  alt="Soil Room"
+              {/* Render fences around the plot */}
+              {fences[x][y][0] && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0, // 칸 밖으로 이동
+                    left: 0,
+                    right: 0,
+                    height: "12px",
+                    backgroundColor: color,
+                    opacity: 1,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "black",
+                  }}
                 />
               )}
-              {status.level === 3 && (
-                <ImageStyled
-                  src="../../image/Farm/rock_room.png"
-                  alt="Rock Room"
+              {fences[x][y][1] && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 0, // 칸 밖으로 이동
+                    left: 0,
+                    right: 0,
+                    height: "12px",
+                    backgroundColor: color,
+                    opacity: 1,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "black",
+                  }}
                 />
               )}
-            </>
-          )}
-          {status.type === "plow" && (
-            <ImageStyled src="../../image/Farm/plow.png" alt="Plowed Field" />
-          )}
-          {status.barn && (
-            <BarnImageStyled src="../../image/Farm/house.png" alt="Barn" />
-          )}
-          {status.fence && <FenceImageStyled />}
-          {status.type === "seeding" && (
-            <SeedImageStyled
-              src="../../image/Farm/plow_grain3.png"
-              alt="Seeded Field"
-            />
-          )}
-        </FarmPlot>
-      ))}
+              {fences[x][y][2] && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: 0, // 칸 밖으로 이동
+                    width: "12px",
+                    backgroundColor: color,
+                    opacity: 1,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "black",
+                  }}
+                />
+              )}
+              {fences[x][y][3] && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    right: 0, // 칸 밖으로 이동
+                    width: "12px",
+                    backgroundColor: color,
+                    opacity: 1,
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor: "black",
+                  }}
+                />
+              )}
+            </CardActionArea>
+          </Card>
+        );
+      })}
       {actionType === "fence" && selectedPositions.length > 0 && (
         <Button onClick={handleSendFencePositions}>Fence!!</Button>
       )}
