@@ -7,33 +7,40 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
-const FarmPlot = styled(Box)(({ theme, status, canBuildFence, fences }) => ({
-  flex: "1 0 18%",
-  height: "100px",
-  backgroundColor:
-    status.type === "room" ? "tan" : canBuildFence ? "lightgreen" : "#33CC33",
-  border: "1px solid",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  cursor: "pointer",
-  position: "relative",
-  "&:hover": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  ...(fences.top && {
-    borderTop: "3px solid red",
-  }),
-  ...(fences.right && {
-    borderRight: "3px solid red",
-  }),
-  ...(fences.bottom && {
-    borderBottom: "3px solid red",
-  }),
-  ...(fences.left && {
-    borderLeft: "3px solid red",
-  }),
-}));
+const FarmPlot = styled(Box)(
+  ({ theme, status, canBuildFence, fences, selected }) => ({
+    flex: "1 0 18%",
+    height: "100px",
+    backgroundColor: selected
+      ? "yellow"
+      : status.type === "room"
+      ? "tan"
+      : canBuildFence
+      ? "lightgreen"
+      : "#33CC33",
+    border: "1px solid",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+    position: "relative",
+    "&:hover": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    ...(fences.top && {
+      borderTop: "3px solid red",
+    }),
+    ...(fences.right && {
+      borderRight: "3px solid red",
+    }),
+    ...(fences.bottom && {
+      borderBottom: "3px solid red",
+    }),
+    ...(fences.left && {
+      borderLeft: "3px solid red",
+    }),
+  })
+);
 
 const ImageStyled = styled("img")({
   width: "100%",
@@ -70,7 +77,7 @@ const PersonalBoard = () => {
   const theme = useTheme();
   const initialPlotStatuses = Array(15).fill({ type: "none", level: 0 });
   initialPlotStatuses[5] = { type: "room", level: 1 };
-  initialPlotStatuses[10] = { type: "room", level: 1 }; //아래 두칸은 기본적으로 방으로 설정
+  initialPlotStatuses[10] = { type: "room", level: 1 };
 
   const [plotStatuses, setPlotStatuses] = useState(initialPlotStatuses);
   const [open, setOpen] = useState(false);
@@ -81,6 +88,9 @@ const PersonalBoard = () => {
   const [fences, setFences] = useState(
     Array(15).fill({ top: 0, right: 0, bottom: 0, left: 0 })
   );
+  const [actionType, setActionType] = useState(null);
+  const [validPositions, setValidPositions] = useState([]);
+  const [selectedPositions, setSelectedPositions] = useState([]);
 
   const handleClickOpen = (index) => {
     setCurrentPlot(index);
@@ -102,7 +112,6 @@ const PersonalBoard = () => {
       (adjIndex) => adjIndex >= 0 && plotStatuses[adjIndex].type === type
     );
   };
-  //인접한 곳에 있는지 확인합니다. 밭과 방, 울타리는 각각 인접한 곳에서만 지어질 수 있습니다.
 
   const updateCanBuildFence = () => {
     const newCanBuildFence = plotStatuses.map((status, index) => {
@@ -170,10 +179,11 @@ const PersonalBoard = () => {
     setFenceCount(count);
     setFences(newFences);
     console.log(`현재 울타리 개수: ${count}`);
-  }; // 울타리를 계산합니다. 울타리는 가장자리에만 지어져야합니다. 예를 들어 두칸인 경우 울타리 개수는 6, 3칸인 경우 8개가 됩니다.
+  };
 
-  const modifyPlot = (modification) => {
+  const modifyPlot = (modification, x, y) => {
     const newPlotStatuses = [...plotStatuses];
+    const currentPlot = x * 5 + y;
     const currentStatus = newPlotStatuses[currentPlot];
 
     if (
@@ -266,6 +276,96 @@ const PersonalBoard = () => {
     handleClose();
   };
 
+  const handlePlotClick = (index) => {
+    const x = Math.floor(index / 5); // 세로 좌표
+    const y = index % 5; // 가로 좌표
+
+    // 유효한 좌표인지 확인
+    const isValidPosition = validPositions.some(
+      (pos) => pos.x === x && pos.y === y
+    );
+    if (!isValidPosition) {
+      console.log("Invalid position selected:", x, y);
+      return;
+    }
+
+    if (actionType === "fence") {
+      // 울타리 클릭 처리
+      const newSelectedPositions = [...selectedPositions];
+      const positionExists = newSelectedPositions.some(
+        (pos) => pos.x === x && pos.y === y
+      );
+      if (positionExists) {
+        setSelectedPositions(
+          newSelectedPositions.filter((pos) => pos.x !== x || pos.y !== y)
+        );
+      } else {
+        newSelectedPositions.push({ x, y });
+        setSelectedPositions(newSelectedPositions);
+      }
+    } else {
+      // 기존 로직 유지 및 수정
+      if (actionType === "plow") {
+        modifyPlot("plow", x, y);
+      } else if (actionType === "room") {
+        modifyPlot("room", x, y);
+      } else if (actionType === "barn") {
+        modifyPlot("barn", x, y);
+      }
+
+      // 좌표가 유효한지 확인하고 유효하면 백엔드로 전송
+      const payload = {
+        playerId: 1,
+        x,
+        y,
+      };
+      console.log("Valid position selected:", x, y);
+      handleSendPosition(payload); // handleSendPosition을 통해 좌표 전송
+    }
+  };
+
+  const handleSendFencePositions = () => {
+    const payload = {
+      playerId: 1,
+      positions: selectedPositions,
+    };
+    console.log("Sending fence positions:", selectedPositions);
+    handleSendPosition(payload);
+    setSelectedPositions([]);
+  };
+
+  const handleValidPositions = (validPositionsMessage) => {
+    const { playerId, actionType, validPositions } = validPositionsMessage;
+
+    console.log("handleValidPositions called with:", validPositionsMessage);
+    setActionType(actionType);
+    setValidPositions(validPositions);
+    console.log("Valid positions updated:", validPositions);
+  };
+
+  useEffect(() => {
+    const initialMessage = {
+      validPositions: [
+        { x: 2, y: 3 },
+        { x: 0, y: 0 },
+        { x: 2, y: 1 },
+        { x: 2, y: 4 },
+        { x: 1, y: 2 },
+        { x: 0, y: 2 },
+        { x: 0, y: 3 },
+        { x: 0, y: 4 },
+        { x: 1, y: 3 },
+        { x: 1, y: 1 },
+        { x: 0, y: 1 },
+        { x: 2, y: 2 },
+        { x: 1, y: 4 },
+      ],
+      playerId: "1",
+      actionType: "fence",
+    };
+    handleValidPositions(initialMessage);
+  }, []);
+
   useEffect(() => {
     updateCanBuildFence();
     updateCanBuildRoom();
@@ -295,7 +395,10 @@ const PersonalBoard = () => {
           canBuildFence={canBuildFence[index]}
           canBuildRoom={canBuildRoom[index]}
           fences={fences[index]}
-          onClick={() => handleClickOpen(index)}
+          selected={selectedPositions.some(
+            (pos) => pos.x === Math.floor(index / 5) && pos.y === index % 5
+          )}
+          onClick={() => handlePlotClick(index)}
         >
           {status.type === "room" && (
             <>
@@ -317,7 +420,7 @@ const PersonalBoard = () => {
                   alt="Rock Room"
                 />
               )}
-            </> // 집은 나무집->흙집->돌집 순으로 개조가 가능합니다. 돌집으로 개조된 이후로는 개조가 불가합니다.
+            </>
           )}
           {status.type === "plow" && (
             <ImageStyled src="../../image/Farm/plow.png" alt="Plowed Field" />
@@ -333,8 +436,10 @@ const PersonalBoard = () => {
             />
           )}
         </FarmPlot>
-        //울타리와 외양간은 중첩해서 설치가 가능합니다.
       ))}
+      {actionType === "fence" && selectedPositions.length > 0 && (
+        <Button onClick={handleSendFencePositions}>Fence!!</Button>
+      )}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Choose Modification</DialogTitle>
         <DialogContent>
