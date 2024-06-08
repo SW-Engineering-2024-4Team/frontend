@@ -12,8 +12,6 @@ import { blue, green, red, yellow } from '@mui/material/colors';
 import Badge from '@mui/material/Badge';
 import { usePlayer } from '../../components/PlayerContext';
 
-const settings = ['PersonalBoard'];
-
 // 선 표시(뱃지)
 const StyledBadge = styled(Badge)(() => ({
   '& .MuiBadge-badge': {
@@ -38,17 +36,9 @@ const ProfileCard = ({ currentPlayer, name, profileImage, profileNum, isFirstPla
 
   const borderColor = getColor();
 
-  // 아이콘 선택해서 메뉴창(후에 플레이어보드 팝업 가능한 장소)
-  const [anchorElUser, setAnchorElUser] = useState(null);
-
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
     setClickedPlayer(currentPlayer);
     console.log(currentPlayer);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -94,28 +84,6 @@ const ProfileCard = ({ currentPlayer, name, profileImage, profileNum, isFirstPla
           )}
         </IconButton>
       </Tooltip>
-      <Menu
-        sx={{ mt: '45px' }}
-        id="player-board"
-        anchorEl={anchorElUser}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: 'center',
-          horizontal: 'center',
-        }}
-        open={Boolean(anchorElUser)}
-        onClose={handleCloseUserMenu}
-      >
-        {settings.map((setting) => (
-          <MenuItem key={setting} onClick={handleCloseUserMenu}>
-            <Typography textAlign="center">{setting}</Typography>
-          </MenuItem>
-        ))}
-      </Menu>
     </Box>
   );
 };
