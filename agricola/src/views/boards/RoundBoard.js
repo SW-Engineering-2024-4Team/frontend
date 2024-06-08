@@ -83,12 +83,12 @@ export default function RoundBoard({ currentPlayer }) {
               playerNumber={playerNumber}
               isClicked={() => handleCardClick(index + 1)} 
               onClick={() => handleCardClick(index + 1)}
-              resource={resourceRoundCards[index + 1]}
-              isBack={isBackRoundCards[index + 1]}
+              resource={resourceRoundCards[index]}
+              isBack={isBackRoundCards[index]}
             />
           </Grid>
         ))}
-        {[4, 6].map((playerNumber, index) => (
+        {clickedRoundCards.slice(4, 6).map((playerNumber, index) => (
           <Grid item xs={2} sm={2} md={8} key={index}>
             <RoundCard  
               cardNumber={index + 5} 

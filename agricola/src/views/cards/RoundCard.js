@@ -4,9 +4,6 @@ import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardActionArea from '@mui/material/CardActionArea';
-import Tooltip from '@mui/material/Tooltip';
-
-import { roundCardDetails } from '../../components/details/RoundCardDeatails';
 
 /*
 라운드 카드 파라미터
@@ -68,7 +65,6 @@ export default function RoundCard({ cardNumber, playerNumber, onClick, sendMessa
   // 카드 컴포넌트 반환
   return (
     <div>
-    <Tooltip title={roundCardDetails[cardNumber-1]}>
       <Card 
         sx={{
           maxWidth: 130,
@@ -101,7 +97,6 @@ export default function RoundCard({ cardNumber, playerNumber, onClick, sendMessa
             )}
         </CardActionArea>
       </Card>
-    </Tooltip>
     </div>
   );
 };
