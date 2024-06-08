@@ -75,7 +75,6 @@ export default function ActionBoard({ currentPlayer }) {
               playerNumber={playerNumber}
               isClicked={() => handleCardClick(index + 1)}
               onClick={() => handleCardClick(index + 1)}
-              sendMessage={sendMessageRef.current}
               resource={resourceActionCards[index+1]}
             />
           </Grid>
