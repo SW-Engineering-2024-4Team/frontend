@@ -45,7 +45,7 @@ export default function SimpleDialogDemo() {
 
   return (
     <div>
-      <Card sx={{ width: 75, height: 75, mx:1, my: 0}} >
+      <Card sx={{ width: 75, height: 75, my: 2, mx: 0.5 }} >
         <CardActionArea onClick={handleClickOpen}>
           <CardMedia
             component="img"

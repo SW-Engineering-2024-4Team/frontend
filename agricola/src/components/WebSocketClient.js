@@ -6,40 +6,50 @@ const WebSocketClient = forwardRef(({ roomId, onMessageReceived }, ref) => {
   const stompClientRef = useRef(null);
   const [connected, setConnected] = useState(false);
 
-  useEffect(() => {
-    const socket = new SockJS('http://localhost:8091/agricola-service');
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      debug: (str) => {
-        console.log(str);
-      },
-      onConnect: (frame) => {
-        console.log('Connected: ' + frame);
-        setConnected(true);
-        stompClient.subscribe(`/topic/room/${roomId}`, (messageOutput) => {
-          onMessageReceived(JSON.parse(messageOutput.body));
-        });
-      },
-      onDisconnect: () => {
-        console.log('Disconnected');
-        setConnected(false);
-      },
-      onStompError: (frame) => {
-        console.error('Broker reported error: ' + frame.headers['message']);
-        console.error('Additional details: ' + frame.body);
-        setConnected(false);
-      }
-    });
+  const connectSocket = () => {
+    if (!connected) {
+      const socket = new SockJS('http://localhost:8091/agricola-service');
+      const stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        debug: (str) => {
+          console.log(str);
+        },
+        onConnect: (frame) => {
+          console.log('Connected: ' + frame);
+          setConnected(true);
+          stompClient.subscribe(`/topic/game`, (messageOutput) => {
+            onMessageReceived(JSON.parse(messageOutput.body));
+          });
+        },
+        onDisconnect: () => {
+          console.log('Disconnected');
+          setConnected(false);
+        },
+        onStompError: (frame) => {
+          console.error('Broker reported error: ' + frame.headers['message']);
+          console.error('Additional details: ' + frame.body);
+          setConnected(false);
+        }
+      });
 
-    stompClient.activate();
-    stompClientRef.current = stompClient;
+      stompClient.activate();
+      stompClientRef.current = stompClient;
+    }
+  };
+
+  const disconnectSocket = () => {
+    if (connected && stompClientRef.current) {
+      stompClientRef.current.deactivate();
+      setConnected(false);
+    }
+  };
+
+  useEffect(() => {
+    connectSocket();
 
     return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.deactivate();
-        setConnected(false);
-      }
+      disconnectSocket();
     };
   }, [roomId, onMessageReceived]);
 
@@ -53,6 +63,9 @@ const WebSocketClient = forwardRef(({ roomId, onMessageReceived }, ref) => {
       } else {
         console.log('STOMP client is not connected');
       }
+    },
+    disconnect: () => {
+      disconnectSocket();
     }
   }));
 

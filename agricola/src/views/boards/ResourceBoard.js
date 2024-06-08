@@ -1,49 +1,53 @@
-import React, { useState, useRef } from 'react';
-
-// MUI 불러오기
-import { styled, useTheme } from "@mui/material/styles";
-
-// 보드 컴포넌트 불러오기
+import React, { useState, useEffect, useRef } from 'react';
 import Box from "@mui/material/Box";
-
 import Resource from "./Resource";
-import WebSocketClient from '../../components/WebSocketClient'; // WebSocketClient 불러오기
+import WebSocketClient from '../../components/WebSocketClient';
 
-const ResourceBoard = () => {
-  const theme = useTheme();
-  const imageSrc =
-    theme.palette.mode === "light" ? "triangle-light.png" : "triangle-dark.png";
+const initialResources = [
+  { name: "Wood", count: 0 },
+  { name: "Soil", count: 0 },
+  { name: "Rock", count: 0 },
+  { name: "Food", count: 0 },
+  { name: "Sheep", count: 0 },
+  { name: "Grain", count: 0 },
+  { name: "Adult", count: 0 },
+  { name: "Newborn", count: 0 },
+  { name: "Fence", count: 0 },
+  { name: "Barn", count: 0 },
+];
 
-  const [resources, setResources] = useState([
-    { name: "Wood", count: 0 },
-    { name: "Soil", count: 0 },
-    { name: "Rock", count: 0 },
-    { name: "Food", count: 0 },
-    { name: "Sheep", count: 0 },
-    { name: "Grain", count: 0 },
-    { name: "Adult", count: 0 },
-    { name: "Newborn", count: 0 },
-    { name: "Fence", count: 0 },
-    { name: "Barn", count: 0 },
-  ]);
+const ResourceBoard = ({ clickedPlayer }) => {
+  const [resources1, setResources1] = useState(initialResources);
+  const [resources2, setResources2] = useState(initialResources);
+  const [resources3, setResources3] = useState(initialResources);
+  const [resources4, setResources4] = useState(initialResources);
 
-  const handlePlacement = (name, placement) => {
-    const updatedResources = resources.map((resource) => {
-      if (resource.name === name) {
-        return { ...resource, count: placement };
-      }
-      return resource;
-    });
-    setResources(updatedResources);
-  };
+  const [resources, setResources] = useState(initialResources);
+  const [color, setColor] = useState('');
 
-  const sendMessageRef = useRef(null);
+  useEffect(() => {
+    if (clickedPlayer === 1) {
+      setColor('rgba(0, 255, 0, 0.3)');
+      setResources(resources1);
+    } else if (clickedPlayer === 2) {
+      setColor('rgba(255, 0, 0, 0.3)');
+      setResources(resources2);
+    } else if (clickedPlayer === 3) {
+      setColor('rgba(0, 0, 255, 0.3)');
+      setResources(resources3);
+    } else if (clickedPlayer === 4) {
+      setColor('rgba(255, 255, 0, 0.3)');
+      setResources(resources4);
+    }
+  }, [clickedPlayer, resources1, resources2, resources3, resources4]);
 
-  // 보드 정보 백엔드에게 받아오기
   const handleMessageReceived = (message) => {
     console.log('Message received from server:', message);
     if (Array.isArray(message.resources)) {
-      setResources(message.resources);
+      if (message.playerId === 1) setResources1(message.resources);
+      if (message.playerId === 2) setResources2(message.resources);
+      if (message.playerId === 3) setResources3(message.resources);
+      if (message.playerId === 4) setResources4(message.resources);
     } else {
       console.error('Invalid resources format received from server');
     }
@@ -56,8 +60,14 @@ const ResourceBoard = () => {
       display="flex"
       alignItems="center"
       justifyContent="center"
+      backgroundColor={color}
+      gap={2}
       p={2}
-      sx={{ border: "2px solid grey", m: 1 }}
+      sx={{ 
+        mx: 3,
+        my: 1,
+        borderRadius: 2,
+      }}
     >
       <WebSocketClient
         roomId="1"

@@ -6,7 +6,8 @@ import io from "socket.io-client";
 import GamePage from "../components/GamePage";
 import LoginPage from "../components/LoginPage";
 import WebSocketClient from "../components/WebSocketClient";
-import { PlayerProvider } from '@/components/PlayerContext';
+import { PlayerProvider } from '../components/PlayerContext';
+import { CardProvider } from '../components/CardContext';
 
 let socket;
 
@@ -100,22 +101,24 @@ export default function Room() {
     return (
       <div>
         <PlayerProvider>
-        <WebSocketClient
-          roomId="1"
-          onMessageReceived={(message) => console.log('Received message:', message)}
-          ref={(client) => {
-            if (client) {
-              sendMessageRef.current = client.sendMessage;
-            }
-          }}
-        />
-        <GamePage 
-          currentPlayer={playerId}
-          sendMessage={sendMessage}
-          messages={messages}
-          message={message}
-          setMessage={setMessage}
-        />
+          <CardProvider>
+            <WebSocketClient
+              roomId="1"
+              onMessageReceived={(message) => console.log('Received message:', message)}
+              ref={(client) => {
+                if (client) {
+                  sendMessageRef.current = client.sendMessage;
+                }
+              }}
+            />
+            <GamePage
+              currentPlayer={playerId}
+              sendMessage={sendMessage}
+              messages={messages}
+              message={message}
+              setMessage={setMessage}
+            />
+          </CardProvider>
         </PlayerProvider>
       </div>
     );

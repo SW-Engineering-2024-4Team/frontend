@@ -6,16 +6,13 @@ import Typography from '@mui/material/Typography'; // Typography import 추가
 import Tooltip from '@mui/material/Tooltip';
 import { actionCardDetails } from '../../components/details/ActionCardDetails';
 
-export default function ActionCard({ cardNumber, resource, playerNumber, onClick, sendMessage }) {
+export default function ActionCard({ cardNumber, resource, playerNumber, onClick }) {
   const [isClicked, setIsClicked] = useState(playerNumber !== 0);
 
   const handleClick = () => {
     setIsClicked(!isClicked);
     if (typeof onClick === 'function') {
       onClick(cardNumber);
-    }
-    if (typeof sendMessage === 'function') {
-      sendMessage(cardNumber);
     }
   };
 
@@ -41,7 +38,7 @@ export default function ActionCard({ cardNumber, resource, playerNumber, onClick
     <div>
       <Tooltip title={actionCardDetails[cardNumber - 1]}>
         <Card 
-          sx={{ maxWidth: 130 }} 
+          sx={{ maxWidth: 130, borderRadius: 2}} 
           onMouseEnter={handleCardHover}
           onMouseLeave={handleCardLeave}
         >
