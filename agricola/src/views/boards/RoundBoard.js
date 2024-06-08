@@ -13,12 +13,12 @@ export default function RoundBoard({ currentPlayer }) {
   const initialClickedRoundCards = [2, 1, 3, 4, 0, 0];
   const [clickedRoundCards, setClickedRoundCards] = useState(initialClickedRoundCards);
   
-  // 자원누적이 필요한 카드: 1,2,4,6,11,12,13 번
-  const initialResourceRoundCards = [,2,1,,1,,1,,,,,1,1,1,,];
+  // 자원누적이 필요한 카드: 3 번
+  const initialResourceRoundCards = [,,,1,,,];
   const [resourceRoundCards, setResourceRoundCards] = useState(initialResourceRoundCards);
 
   // 뒷면이면 0, 앞면이면 1
-  const initialIsBackRoundCards = [];
+  const initialIsBackRoundCards = [1, 1, 1, 1, 1, 0];
   const [isBackRoundCards, setIsBackRoundCards] = useState(initialIsBackRoundCards);
 
   const sendMessageRef = useRef(null);
@@ -76,39 +76,26 @@ export default function RoundBoard({ currentPlayer }) {
         }}
       />
       <Grid container direction="column" justifyContent="center" alignItems="flex-start" spacing={{ xs: 2, md: 2 }} columns={{ xs: 4, sm: 8, md: 8 }}>
-        {Array.from(Array(4)).map((playerNumber, index) => (
+        {clickedRoundCards.slice(0, 4).map((playerNumber, index) => (
           <Grid item xs={1} sm={1} md={1} key={index}>
             <RoundCard 
-              cardNumber={index+1} 
-              playerNumber={playerNumber} 
-              isClicked={() => handleCardClick(index + 1)}
+              cardNumber={index + 1} 
+              playerNumber={playerNumber}
+              isClicked={() => handleCardClick(index + 1)} 
               onClick={() => handleCardClick(index + 1)}
-              sendMessage={sendMessageRef.current}
-              resource={resourceRoundCards[index+1]}
+              resource={resourceRoundCards[index + 1]}
+              isBack={isBackRoundCards[index + 1]}
             />
           </Grid>
         ))}
-        {Array.from(Array(1)).map((playerNumber, index) => (
+        {[4, 6].map((playerNumber, index) => (
           <Grid item xs={2} sm={2} md={8} key={index}>
             <RoundCard  
-              cardNumber={index+5} 
+              cardNumber={index + 5} 
               playerNumber={playerNumber} 
               isClicked={() => handleCardClick(index + 5)}
               onClick={() => handleCardClick(index + 5)}
-              sendMessage={sendMessageRef.current}
-              resource={resourceRoundCards[index+5]}
-            />
-          </Grid>
-        ))}
-        {Array.from(Array(1)).map((playerNumber, index) => (
-          <Grid item xs={2} sm={2} md={8} key={index}>
-            <RoundCard  
-              cardNumber={index+6} 
-              playerNumber={playerNumber} 
-              isClicked={() => handleCardClick(index + 6)}
-              onClick={() => handleCardClick(index + 6)}
-              sendMessage={sendMessageRef.current}
-              resource={resourceRoundCards[index+6]}
+              isBack={isBackRoundCards[index + 4]}
             />
           </Grid>
         ))}

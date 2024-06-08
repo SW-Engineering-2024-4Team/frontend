@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardActionArea from '@mui/material/CardActionArea';
-import Typography from '@mui/material/Typography'; // Typography import 추가
 import Tooltip from '@mui/material/Tooltip';
 
 import { roundCardDetails } from '../../components/details/RoundCardDeatails';
@@ -17,17 +16,15 @@ import { roundCardDetails } from '../../components/details/RoundCardDeatails';
 -- onClick 카드 클릭 여부
 */
 
-export default function RoundCard({ cardNumber, resource, playerNumber, onClick, sendMessage }) {
+export default function RoundCard({ cardNumber, playerNumber, onClick, sendMessage, isBack }) {
 
-  // 카드가 뒤집힌 상태
-  const [isBack, setIsBack] = useState(false);
   // 카드가 클릭된 상태
   const [isClicked, setIsClicked] = useState(playerNumber !== 0);
 
   // 카드 클릭 시 호출되는 핸들러 함수 
   const handleClick = () => {
     if (isBack == false){
-      setIsBack(true);
+      isBack == !isBack
       setTimeout(() => {
         if (typeof onClick === 'function') {
           onClick(cardNumber);
@@ -35,7 +32,7 @@ export default function RoundCard({ cardNumber, resource, playerNumber, onClick,
       }, 500); // 0.5초 후에 onClick 실행
     }
     if (isBack == true){
-      setIsClicked(true);
+      setIsClicked(!isClicked);
       setTimeout(() => {
         if (typeof onClick === 'function') {
           onClick(cardNumber);
@@ -53,7 +50,6 @@ export default function RoundCard({ cardNumber, resource, playerNumber, onClick,
   const cardClas2 = `round ${cardNumber} ${isClicked ? 'Y' : 'N'} `;
   const imagePath = isBack ? `../../image/RoundCard/round${cardNumber}.png` : `../../image/CardFrame/frame1.png`;
   const coverImagePath = playerNumber ? `../../image/ClickedCard/clicked-round${playerNumber}.png` : null;
-  const opacity_ = isClicked ? 1.0 : 0.0;
 
   const handleCardHover = (event) => {
     const card = event.currentTarget;
@@ -88,9 +84,8 @@ export default function RoundCard({ cardNumber, resource, playerNumber, onClick,
               height="200"
               image={imagePath}
               alt={cardClass}
-              onClick={handleClick} // 카드 클릭 이벤트에 handleClick 함수 할당
             />
-            {isBack == 'front' && isClicked && coverImagePath && (
+            {isBack == 1 && isClicked && coverImagePath && (
               <img
                 src={coverImagePath}
                 alt="coverImage"
@@ -101,18 +96,8 @@ export default function RoundCard({ cardNumber, resource, playerNumber, onClick,
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  opacity: `${opacity_}`,
                 }}
               />
-            )}
-            { (
-              <Typography 
-                  variant="h4" 
-                  color="text.primary" 
-                  style={{ position: 'absolute', bottom: 18, right: 75, fontWeight: 'bold' }}
-                >
-                  {resource}
-              </Typography>
             )}
         </CardActionArea>
       </Card>
