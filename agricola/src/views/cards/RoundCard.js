@@ -17,7 +17,7 @@ import { roundCardDetails } from '../../components/details/RoundCardDeatails';
 -- onClick 카드 클릭 여부
 */
 
-export default function RoundCard({ index, cardNumber, resource, playerNumber, onClick, sendMessage }) {
+export default function RoundCard({ cardNumber, resource, playerNumber, onClick, sendMessage }) {
 
   // 카드가 뒤집힌 상태
   const [isBack, setIsBack] = useState(false);
@@ -50,9 +50,9 @@ export default function RoundCard({ index, cardNumber, resource, playerNumber, o
   // 카드의 클래스 결정
   const cardClass = `card ${isBack ? 'front' : 'back' }`;
   // 이미지 경로 결정
-  const cardClas2 = `action ${cardNumber} ${isClicked ? 'Y' : 'N'} `;
+  const cardClas2 = `round ${cardNumber} ${isClicked ? 'Y' : 'N'} `;
   const imagePath = isBack ? `../../image/RoundCard/round${cardNumber}.png` : `../../image/CardFrame/frame1.png`;
-  const coverImagePath = `../../image/ClickedCard/clicked-round${playerNumber}.png`;
+  const coverImagePath = playerNumber ? `../../image/ClickedCard/clicked-round${playerNumber}.png` : null;
   const opacity_ = isClicked ? 1.0 : 0.0;
 
   const handleCardHover = (event) => {
@@ -90,19 +90,20 @@ export default function RoundCard({ index, cardNumber, resource, playerNumber, o
               alt={cardClass}
               onClick={handleClick} // 카드 클릭 이벤트에 handleClick 함수 할당
             />
-            {isBack == 'front' && isClicked && coverImagePath && (<img
-              src={coverImagePath}
-              alt="coverImage"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                opacity: `${opacity_}`,
-              }}
-            />
+            {isBack == 'front' && isClicked && coverImagePath && (
+              <img
+                src={coverImagePath}
+                alt="coverImage"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: `${opacity_}`,
+                }}
+              />
             )}
             { (
               <Typography 
