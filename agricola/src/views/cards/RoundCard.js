@@ -20,21 +20,15 @@ export default function RoundCard({ cardNumber, playerNumber, onClick, sendMessa
 
   // 카드 클릭 시 호출되는 핸들러 함수 
   const handleClick = () => {
-    if (isBack == false){
-      isBack == !isBack
-      setTimeout(() => {
-        if (typeof onClick === 'function') {
-          onClick(cardNumber);
-        }
-      }, 500); // 0.5초 후에 onClick 실행
-    }
     if (isBack == true){
-      setIsClicked(!isClicked);
-      setTimeout(() => {
-        if (typeof onClick === 'function') {
-          onClick(cardNumber);
-        }
-      }, 500); // 0.5초 후에 onClick 실행
+      if (!isClicked){
+        setIsClicked(isClicked);
+        setTimeout(() => {
+          if (typeof onClick === 'function') {
+            onClick(cardNumber);
+          }
+        }, 500); // 0.5초 후에 onClick 실행
+      }
     }
     if (typeof sendMessage === 'function') {
       sendMessage(cardNumber);
