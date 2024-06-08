@@ -27,16 +27,16 @@ const ResourceBoard = ({ clickedPlayer }) => {
 
   useEffect(() => {
     if (clickedPlayer === 1) {
-      setColor('rgba(0, 255, 0, 0.3)');
+      setColor("#66CC66");
       setResources(resources1);
     } else if (clickedPlayer === 2) {
-      setColor('rgba(255, 0, 0, 0.3)');
+      setColor("#CC3333");
       setResources(resources2);
     } else if (clickedPlayer === 3) {
-      setColor('rgba(0, 0, 255, 0.3)');
+      setColor("#3366CC");
       setResources(resources3);
     } else if (clickedPlayer === 4) {
-      setColor('rgba(255, 255, 0, 0.3)');
+      setColor("#FFFF99");
       setResources(resources4);
     }
   }, [clickedPlayer, resources1, resources2, resources3, resources4]);
@@ -55,18 +55,19 @@ const ResourceBoard = ({ clickedPlayer }) => {
 
   return (
     <Box
-      height={400}
+      height={350}
       width={150}
       display="flex"
       alignItems="center"
       justifyContent="center"
-      backgroundColor={color}
+      // backgroundColor={color}
       gap={2}
       p={2}
       sx={{ 
+        my: 2,
         mx: 3,
-        my: 1,
-        borderRadius: 2,
+        border: `3px solid ${color}`,
+        borderRadius: 0.8,
       }}
     >
       <WebSocketClient

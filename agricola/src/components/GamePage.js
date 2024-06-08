@@ -7,7 +7,7 @@ import ActionBoard from '../views/boards/ActionBoard';
 import RoundBoard from '../views/boards/RoundBoard';
 import CurrentBoard from '../views/boards/CurrentBoard';
 import ResourceBoard from '../views/boards/ResourceBoard';
-import PersonalBoard from '../views/boards/PersonalBoard2';
+import PersonalBoard from '../views/boards/PersonalBoard';
 import OwnBoard from '../views/boards/OwnBoard';
 import TriggerBoard from '../views/boards/TriggerBoard';
 

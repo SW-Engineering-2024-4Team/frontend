@@ -15,16 +15,16 @@ const TriggerBoard = ({ currentPlayer, clickedPlayer }) => {
 
   useEffect(() => {
     if (clickedPlayer === 1) {
-      setColor('rgba(0, 255, 0, 0.3)');
+      setColor("#66CC66");
       setDeckCard(deckCard1);
     } else if (clickedPlayer === 2) {
-      setColor('rgba(255, 0, 0, 0.3)');
+      setColor("#CC3333");
       setDeckCard(deckCard2);
     } else if (clickedPlayer === 3) {
-      setColor('rgba(0, 0, 255, 0.3)');
+      setColor("#3366CC");
       setDeckCard(deckCard3);
     } else {
-      setColor('rgba(255, 255, 0, 0.3)');
+      setColor("#FFFF99");
       setDeckCard(deckCard4);
     }
   }, [clickedPlayer, deckCard1, deckCard2, deckCard3, deckCard4]);
@@ -52,8 +52,10 @@ const TriggerBoard = ({ currentPlayer, clickedPlayer }) => {
       gap={4}
       p={2}
       sx={{
-        m: 0,
-        borderRadius: 2,
+        my: 2,
+        mx: 0,
+        border: '1.5px solid #000000',
+        borderRadius: 0.8,
         overflowX: 'auto',
         overflowY: 'hidden',
       }}
